@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="utf-16"?>
+<nugget name="JSON-0.2.0">
+ <CLAS CLSNAME="ZCL_JSON_DOCUMENT" VERSION="1" LANGU="E" DESCRIPT="JSON Document" UUID="CB3FD84C1623370CE1000000C0A8263A" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101108" CHGDANYON="00000000" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="701" CLSBCCAT="00" DURATION_TYPE="0 " RISK_LEVEL="0 ">
+  <publicSection>class ZCL_JSON_DOCUMENT definition
+  public
+  create public .
+
+*&quot;* public components of class ZCL_JSON_DOCUMENT
+*&quot;* do not include other source files here!!!
+public section.
+  type-pools ABAP .
+
+  class-methods CREATE
+    returning
+      value(JSON_DOCUMENT) type ref to ZCL_JSON_DOCUMENT .
+  class-methods CREATE_WITH_JSON
+    importing
+      !JSON type STRING
+    returning
+      value(JSON_DOCUMENT) type ref to ZCL_JSON_DOCUMENT .
+  class-methods CREATE_WITH_DATA
+    importing
+      !DATA type ANY
+    returning
+      value(JSON_DOCUMENT) type ref to ZCL_JSON_DOCUMENT .
+  methods SET_JSON
+    importing
+      !JSON type STRING .
+  methods GET_JSON
+    returning
+      value(JSON) type STRING .
+  methods SET_DATA
+    importing
+      !DATA type ANY .
+  methods GET_NEXT
+    returning
+      value(DATA_FOUND) type BOOLEAN .
+  methods RESET_CURSOR .
+  methods GET_VALUE
+    importing
+      !KEY type STRING
+    returning
+      value(VALUE) type STRING .
+  methods GET_VALUE_INT
+    importing
+      !KEY type STRING
+    returning
+      value(VALUE) type I .</publicSection>
+  <protectedSection>*&quot;* protected components of class ZCL_JSON_DOCUMENT
+*&quot;* do not include other source files here!!!
+protected section.</protectedSection>
+  <privateSection>*&quot;* private components of class ZCL_JSON_DOCUMENT
+*&quot;* do not include other source files here!!!
+private section.
+
+  data JSON type STRING .
+  data DATA type ZJSON_KEY_VALUE_T .
+  data DATA_T type STRING_TABLE .
+  data ARRAY_CURSOR type I .
+
+  class-methods COPYRIGHT .
+  methods PARSE
+    importing
+      !JSON type STRING optional .
+  methods PARSE_OBJECT .
+  methods PARSE_ARRAY .
+  methods GET_OFFSET_CLOSE
+    importing
+      !JSON type STRING
+      !OFFSET_OPEN type I default 0
+    returning
+      value(OFFSET_CLOSE) type I .
+  methods ESCAPECHAR
+    importing
+      !JSON type STRING
+      !OFFSET type I
+    changing
+      !MATCH_RESULT type MATCH_RESULT_TAB .
+  methods ADD_DATA
+    importing
+      !DATA type ANY .
+  methods ADD_TABLE
+    importing
+      !TABLE type ANY TABLE .
+  methods ADD_STRU
+    importing
+      !LINE type ANY .
+  methods ADD_STRING
+    importing
+      !STRING type ANY .
+  methods ADD_NUMBER
+    importing
+      !NUMBER type ANY .
+  methods ADD_DATE
+    importing
+      !DATE type D .
+  methods ADD_TIME
+    importing
+      !TIME type T .</privateSection>
+  <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+  <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+  <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+  <typeUsage CLSNAME="ZCL_JSON_DOCUMENT" TYPEGROUP="ABAP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <forwardDeclaration>ABAP</forwardDeclaration>
+  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ARRAY_CURSOR" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="4 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="I" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="701" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATA" VERSION="1" LANGU="E" DESCRIPT="JSON Key/Value pairs (hashed)" EXPOSURE="0" STATE="1" EDITORDER="2 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZJSON_KEY_VALUE_T" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="701" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATA_T" VERSION="1" LANGU="E" DESCRIPT="Table of Strings" EXPOSURE="0" STATE="1" EDITORDER="3 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING_TABLE" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="701" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="JSON" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="1 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="701" TYPESRC_LENG="0 "/>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_DATA" VERSION="1" LANGU="E" DESCRIPT="Add unknown data" EXPOSURE="0" STATE="1" EDITORDER="17 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_DATA" SCONAME="DATA" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+   <source>METHOD add_data.
+
+  DATA: data_descr TYPE REF TO cl_abap_datadescr.
+
+  data_descr ?= cl_abap_typedescr=&gt;describe_by_data( data ).
+
+  CASE data_descr-&gt;type_kind.
+    WHEN data_descr-&gt;typekind_table.       &quot;table
+
+      add_table( data ).
+
+    WHEN data_descr-&gt;typekind_struct1     &quot;flat strcuture
+    OR   data_descr-&gt;typekind_struct2.     &quot;deep strcuture
+
+      add_stru( data ).
+
+    WHEN data_descr-&gt;typekind_num          &quot;charlike incl. NUMC
+    OR   data_descr-&gt;typekind_char
+    OR   data_descr-&gt;typekind_string
+    OR   data_descr-&gt;typekind_clike
+    OR   data_descr-&gt;typekind_csequence.
+
+      add_string( data ).
+
+    WHEN data_descr-&gt;typekind_int
+    OR   data_descr-&gt;typekind_int1
+    OR   data_descr-&gt;typekind_int2
+    OR   data_descr-&gt;typekind_packed.
+
+      add_number( data ).
+
+    WHEN data_descr-&gt;typekind_date.
+
+      add_date( data ).
+
+    WHEN data_descr-&gt;typekind_time.
+
+      add_time( data ).
+
+    WHEN data_descr-&gt;typekind_hex
+    OR   data_descr-&gt;typekind_float
+    OR   data_descr-&gt;typekind_w
+    OR   data_descr-&gt;typekind_oref
+    OR   data_descr-&gt;typekind_xstring
+    OR   data_descr-&gt;typekind_dref
+    OR   data_descr-&gt;typekind_class
+    OR   data_descr-&gt;typekind_intf
+    OR   data_descr-&gt;typekind_any
+    OR   data_descr-&gt;typekind_data
+    OR   data_descr-&gt;typekind_simple
+    OR   data_descr-&gt;typekind_xsequence
+    OR   data_descr-&gt;typekind_numeric
+    OR   data_descr-&gt;typekind_table
+    OR   data_descr-&gt;typekind_iref.
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_DATE" VERSION="1" LANGU="E" DESCRIPT="Add date" EXPOSURE="0" STATE="1" EDITORDER="22 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_DATE" SCONAME="DATE" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="D"/>
+   <source>METHOD add_date.
+
+  DATA: lv_date_c TYPE c LENGTH 8.
+
+  lv_date_c = date.
+
+  CONCATENATE
+    json
+    &apos;&quot;&apos;
+    lv_date_c
+    &apos;&quot;&apos;
+  INTO json.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_NUMBER" VERSION="1" LANGU="E" DESCRIPT="Add number (I/P)" EXPOSURE="0" STATE="1" EDITORDER="21 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_NUMBER" SCONAME="NUMBER" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+   <source>METHOD add_number.
+
+  DATA: lv_num_c TYPE c LENGTH 20.
+
+  lv_num_c = number.
+
+  &quot;*--- sign on the left ---*
+  IF lv_num_c CS &apos;-&apos;.
+    SHIFT lv_num_c RIGHT UP TO &apos;-&apos;.
+    SHIFT lv_num_c CIRCULAR RIGHT.
+  ENDIF.
+
+  CONDENSE lv_num_c NO-GAPS.
+
+  CONCATENATE
+    json
+    lv_num_c
+  INTO json.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_STRING" VERSION="1" LANGU="E" DESCRIPT="Add string" EXPOSURE="0" STATE="1" EDITORDER="20 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_STRING" SCONAME="STRING" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+   <source>METHOD add_string.
+
+  DATA: lv_string TYPE string.
+
+  lv_string = string.
+
+  &quot;*--- JSON conform conversion ---*
+  REPLACE ALL OCCURRENCES OF &apos;&quot;&apos; IN lv_string WITH &apos;&apos;.
+
+  CONCATENATE
+    json
+    &apos;&quot;&apos;
+    string
+    &apos;&quot;&apos;
+  INTO json.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_STRU" VERSION="1" LANGU="E" DESCRIPT="Add structure" EXPOSURE="0" STATE="1" EDITORDER="19 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_STRU" SCONAME="LINE" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+   <source>METHOD add_stru.
+
+  DATA: stru_descr   TYPE REF TO cl_abap_structdescr
+      , lv_tabix     TYPE sy-tabix
+      , comp_name    TYPE abap_compname
+      .
+
+  FIELD-SYMBOLS: &lt;value&gt; TYPE ANY
+               , &lt;component&gt; TYPE abap_compdescr
+               .
+
+  stru_descr ?= cl_abap_typedescr=&gt;describe_by_data( line ).
+
+  CONCATENATE
+    json
+    &apos;{&apos;
+  INTO json.
+
+  LOOP AT stru_descr-&gt;components
+    ASSIGNING &lt;component&gt;.
+
+    lv_tabix = sy-tabix.
+
+    ASSIGN COMPONENT &lt;component&gt;-name OF STRUCTURE line TO &lt;value&gt;.
+
+    comp_name = &lt;component&gt;-name.
+    TRANSLATE comp_name TO LOWER CASE.
+
+    CONCATENATE
+      json
+      &apos;&quot;&apos;
+      comp_name
+      &apos;&quot; :&apos;
+    INTO json.
+
+    add_data( &lt;value&gt; ).
+
+    IF lv_tabix &lt;&gt; LINES( stru_descr-&gt;components ).
+      CONCATENATE
+        json
+        &apos;,&apos;
+      INTO json.
+    ENDIF.
+
+  ENDLOOP.
+
+  CONCATENATE
+    json
+    &apos;}&apos;
+  INTO json.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_TABLE" VERSION="1" LANGU="E" DESCRIPT="Add table type" EXPOSURE="0" STATE="1" EDITORDER="18 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_TABLE" SCONAME="TABLE" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY TABLE"/>
+   <source>METHOD add_table.
+
+  DATA: lv_tabix TYPE sytabix.
+  FIELD-SYMBOLS: &lt;line&gt; TYPE ANY.
+
+  CONCATENATE
+    json
+    &apos;[&apos;
+  INTO json.
+
+  LOOP AT table
+    ASSIGNING &lt;line&gt;.
+
+    lv_tabix = sy-tabix.
+
+    add_data( &lt;line&gt; ).
+
+    IF lv_tabix &lt;&gt; LINES( table ).
+      CONCATENATE
+        json
+        &apos;,&apos;
+      INTO json.
+    ENDIF.
+
+  ENDLOOP.
+
+  CONCATENATE
+    json
+    &apos;]&apos;
+  INTO json.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_TIME" VERSION="1" LANGU="E" DESCRIPT="Add time" EXPOSURE="0" STATE="1" EDITORDER="23 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_TIME" SCONAME="TIME" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="T"/>
+   <source>METHOD add_time.
+
+  DATA: lv_time_c TYPE c LENGTH 8.
+
+  CONCATENATE
+    time(2)
+    &apos;:&apos;
+    time+2(2)
+    &apos;:&apos;
+    time+4(2)
+  INTO lv_time_c.
+
+  CONCATENATE
+    json
+    &apos;&quot;&apos;
+    lv_time_c
+    &apos;&quot;&apos;
+  INTO json.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="COPYRIGHT" VERSION="1" LANGU="E" DESCRIPT="Readme: Copyright" EXPOSURE="0" STATE="1" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="1" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <source>METHOD COPYRIGHT.
+
+*--------------------------------------------------------------------*
+*
+* The JSON Parser (Part of &quot;Twibap: The ABAP Twitter API&quot;)
+* Copyright (C) 2010 Uwe Fetzer + SAP Developer Network members
+*
+* Project home: https://cw.sdn.sap.com/cw/groups/twibap
+*
+* Published under the Terms of use of SAP Code Exchange:
+* http://www.sdn.sap.com/irj/sdn/code-exchange
+*
+*--------------------------------------------------------------------*
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE" VERSION="1" LANGU="E" DESCRIPT="Create new document" EXPOSURE="2" STATE="1" EDITORDER="2 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="1" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE" SCONAME="JSON_DOCUMENT" VERSION="1" LANGU="E" DESCRIPT="JSON Document" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="ZCL_JSON_DOCUMENT"/>
+   <source>METHOD create.
+
+  CREATE OBJECT json_document.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" VERSION="1" LANGU="E" DESCRIPT="Create new document (with ABAP data)" EXPOSURE="2" STATE="1" EDITORDER="4 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="1" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="DATA" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="JSON_DOCUMENT" VERSION="1" LANGU="E" DESCRIPT="JSON Document" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="ZCL_JSON_DOCUMENT"/>
+   <source>METHOD create_with_data.
+
+  CREATE OBJECT json_document.
+  json_document-&gt;set_data( data ).
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_JSON" VERSION="1" LANGU="E" DESCRIPT="Create new document (with JSON)" EXPOSURE="2" STATE="1" EDITORDER="3 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="1" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_JSON" SCONAME="JSON" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_JSON" SCONAME="JSON_DOCUMENT" VERSION="1" LANGU="E" DESCRIPT="JSON Document" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="ZCL_JSON_DOCUMENT"/>
+   <source>METHOD CREATE_WITH_JSON.
+
+  CREATE OBJECT json_document.
+  json_document-&gt;set_json( json ).
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ESCAPECHAR" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="16 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ESCAPECHAR" SCONAME="JSON" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ESCAPECHAR" SCONAME="OFFSET" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ESCAPECHAR" SCONAME="MATCH_RESULT" VERSION="1" LANGU="E" DESCRIPT="Tabelle von Suchergebnissen" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="2" PARPASSTYP="1" TYPTYPE="1" TYPE="MATCH_RESULT_TAB"/>
+   <source>METHOD escapechar.
+
+  DATA lv_tab TYPE LINE OF match_result_tab.
+  DATA lv_len TYPE i.
+  DATA lt_result_tabguillemet TYPE match_result_tab.
+  DATA lv_result_tabguillemet TYPE LINE OF match_result_tab.
+  DATA lv_pos_echap TYPE i.
+  DATA lv_count TYPE i.
+  DATA lv_parite TYPE p DECIMALS 1.
+
+  CONSTANTS : c_echap TYPE c VALUE &apos;\&apos;.
+
+  LOOP AT match_result INTO lv_tab.
+    FIND ALL OCCURRENCES OF &apos;&quot;&apos; IN json+offset(lv_tab-offset) RESULTS lt_result_tabguillemet.
+    CLEAR lv_count.
+    LOOP AT lt_result_tabguillemet INTO lv_result_tabguillemet WHERE offset LT lv_tab-offset.
+      lv_pos_echap = offset + lv_result_tabguillemet-offset - 1.
+      CHECK json+lv_pos_echap(1) NE c_echap.
+      lv_count = lv_count + 1.
+    ENDLOOP.
+    lv_parite = FRAC( lv_count / 2 ).
+    CHECK lv_parite IS NOT INITIAL.
+    DELETE match_result.
+  ENDLOOP.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_JSON" VERSION="1" LANGU="E" DESCRIPT="Get document data (JSON)" EXPOSURE="2" STATE="1" EDITORDER="6 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_JSON" SCONAME="JSON" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="1" TYPE="STRING"/>
+   <source>METHOD get_json.
+
+  json = me-&gt;json.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_NEXT" VERSION="1" LANGU="E" DESCRIPT="Set cursor to next array entry" EXPOSURE="2" STATE="1" EDITORDER="11 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_NEXT" SCONAME="DATA_FOUND" VERSION="1" LANGU="E" DESCRIPT="Boolean Variable (X=True, -=False, Space=Unknown)" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="1" TYPE="BOOLEAN"/>
+   <source>METHOD get_next.
+
+  DATA: lv_json TYPE string.
+
+  ADD 1 TO me-&gt;array_cursor.
+
+  &quot;*--- get next entry ---*
+  READ TABLE me-&gt;data_t INDEX me-&gt;array_cursor INTO lv_json.
+
+  IF sy-subrc = 0.
+    set_json( lv_json ).
+    data_found = abap_true.
+  ENDIF.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_OFFSET_CLOSE" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="15 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_OFFSET_CLOSE" SCONAME="JSON" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_OFFSET_CLOSE" SCONAME="OFFSET_OPEN" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="I" PARVALUE="0"/>
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_OFFSET_CLOSE" SCONAME="OFFSET_CLOSE" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="1" TYPE="I"/>
+   <source>METHOD get_offset_close.
+
+  DATA: lv_offset          TYPE i
+      , lv_copen           TYPE c
+      , lv_cclose          TYPE c
+      , lv_pos_echap       TYPE i
+      , lt_result_tabopen  TYPE match_result_tab
+      , lv_result_tabopen  TYPE LINE OF match_result_tab
+      , lt_result_tabclose TYPE match_result_tab
+      , lv_result_tabclose TYPE LINE OF match_result_tab
+      , lv_offsetclose_old TYPE i
+      .
+
+  CONSTANTS : c_echap TYPE c VALUE &apos;\&apos;.
+
+  lv_copen = json+offset_open(1).
+  CASE lv_copen.
+    WHEN &apos;&quot;&apos;. lv_cclose = &apos;&quot;&apos;.
+    WHEN &apos;{&apos;. lv_cclose = &apos;}&apos;.
+    WHEN &apos;[&apos;. lv_cclose = &apos;]&apos;.
+  ENDCASE.
+  lv_offset = offset_open + 1.
+  IF lv_copen EQ &apos;&quot;&apos;.
+    FIND ALL OCCURRENCES OF lv_cclose IN json+lv_offset RESULTS lt_result_tabclose.
+    LOOP AT lt_result_tabclose INTO lv_result_tabclose.
+      lv_pos_echap = lv_offset + lv_result_tabclose-offset - 1.
+      CHECK json+lv_pos_echap(1) NE c_echap.
+      EXIT.
+    ENDLOOP.
+    offset_close = lv_offset + lv_result_tabclose-offset + 1. &quot;CBO due to change in the else statement
+  ELSE.
+    FIND ALL OCCURRENCES OF lv_copen IN json+lv_offset RESULTS lt_result_tabopen.
+    escapechar(
+      EXPORTING
+        json = json
+        offset = lv_offset
+      CHANGING
+        match_result = lt_result_tabopen
+      ).
+
+    FIND ALL OCCURRENCES OF lv_cclose IN json+lv_offset RESULTS lt_result_tabclose.
+    escapechar(
+      EXPORTING
+        json = json
+        offset = lv_offset
+      CHANGING
+        match_result = lt_result_tabclose
+      ).
+
+*   CHANGING CBO : We look to the first close where no open is set before
+*                by removing each open corresponding of each close
+    DATA lv_last_idx LIKE sy-tabix.
+    LOOP AT lt_result_tabclose INTO lv_result_tabclose.
+      CLEAR: lv_result_tabopen.
+      lv_last_idx = -1.
+      LOOP AT lt_result_tabopen INTO lv_result_tabopen WHERE offset BETWEEN 0 AND lv_result_tabclose-offset.
+        lv_last_idx = sy-tabix.
+      ENDLOOP.
+      IF NOT lv_last_idx = -1 .
+        DELETE lt_result_tabopen INDEX lv_last_idx.
+      ELSE.
+        offset_close = lv_offset + lv_result_tabclose-offset + 1.
+        EXIT.
+      ENDIF.
+    ENDLOOP.
+
+  ENDIF.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_VALUE" VERSION="1" LANGU="E" DESCRIPT="get string value" EXPOSURE="2" STATE="1" EDITORDER="13 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_VALUE" SCONAME="KEY" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_VALUE" SCONAME="VALUE" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="1" TYPE="STRING"/>
+   <source>METHOD get_value.
+
+  FIELD-SYMBOLS: &lt;data&gt; TYPE zjson_key_value.
+
+  READ TABLE me-&gt;data
+    ASSIGNING &lt;data&gt;
+    WITH TABLE KEY
+      key = key.
+
+  IF sy-subrc = 0.
+    value = &lt;data&gt;-value.
+  ENDIF.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_VALUE_INT" VERSION="1" LANGU="E" DESCRIPT="get integer value" EXPOSURE="2" STATE="1" EDITORDER="14 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_VALUE_INT" SCONAME="KEY" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="GET_VALUE_INT" SCONAME="VALUE" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="1" TYPE="I"/>
+   <source>METHOD get_value_int.
+
+  DATA: lv_value_string TYPE string.
+  FIELD-SYMBOLS: &lt;data&gt; TYPE zjson_key_value.
+
+  READ TABLE me-&gt;data
+    ASSIGNING &lt;data&gt;
+    WITH TABLE KEY
+    key = key.
+
+  IF sy-subrc = 0.
+    lv_value_string = &lt;data&gt;-value.
+  ENDIF.
+
+  IF lv_value_string CO &apos; 1234567890-&apos;.
+    value = lv_value_string.
+  ENDIF.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="PARSE" VERSION="1" LANGU="E" DESCRIPT="Parse data" EXPOSURE="0" STATE="1" EDITORDER="8 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="PARSE" SCONAME="JSON" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING" PAROPTIONL="X"/>
+   <source>METHOD parse.
+
+  &quot;*--- new data given ---*
+  IF json IS NOT INITIAL.
+
+    set_json( json ).
+
+  ELSE.
+
+    CASE me-&gt;json(1).
+      WHEN &apos;[&apos;.
+        parse_array( ).
+      WHEN &apos;{&apos;.
+        parse_object( ).
+      WHEN OTHERS.
+        RETURN.
+    ENDCASE.
+
+  ENDIF.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="PARSE_ARRAY" VERSION="1" LANGU="E" DESCRIPT="Parse JSON into object array" EXPOSURE="0" STATE="1" EDITORDER="10 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <source>METHOD parse_array.
+
+  DATA: lv_json      TYPE string
+      , lv_json_part TYPE string
+      , lv_close     TYPE i
+      , data         TYPE zjson_key_value_t
+      .
+
+  lv_json = me-&gt;json.
+  CLEAR me-&gt;data_t.
+  CLEAR me-&gt;array_cursor.
+
+  SHIFT lv_json LEFT.
+  SHIFT lv_json RIGHT DELETING TRAILING &apos;]&apos;.
+
+  SHIFT lv_json LEFT DELETING LEADING space.
+
+  WHILE NOT lv_json CO space.
+
+    CASE lv_json(1).
+
+      WHEN &apos;{&apos; OR &apos;[&apos;.          &quot;object or array
+
+        lv_close = get_offset_close( lv_json ).
+
+        &quot;*--- get object ---*
+        lv_json_part = lv_json(lv_close).
+        INSERT lv_json_part INTO TABLE me-&gt;data_t.
+
+        lv_json = lv_json+lv_close.
+
+      WHEN &apos;&quot;&apos;.          &quot;string
+
+        lv_close = get_offset_close( lv_json ) - 2.  &quot;w/o &quot;
+
+        &quot;*--- get object ---*
+        IF lv_close &gt; 0.
+          lv_json_part = lv_json+1(lv_close).
+        ELSE.
+          CLEAR lv_json_part.
+        ENDIF.
+
+        INSERT lv_json_part INTO TABLE me-&gt;data_t.
+
+        ADD 2 TO lv_close.
+        lv_json = lv_json+lv_close.
+
+      WHEN OTHERS.       &quot;numbers, boolean, NULL
+
+        SPLIT lv_json AT &apos;,&apos; INTO lv_json_part lv_json.
+        SHIFT lv_json_part LEFT DELETING LEADING space.
+        INSERT lv_json_part INTO TABLE me-&gt;data_t.
+
+    ENDCASE.
+
+    SHIFT lv_json LEFT DELETING LEADING space.
+    SHIFT lv_json LEFT DELETING LEADING &apos;,&apos;.
+    SHIFT lv_json LEFT DELETING LEADING space.
+
+  ENDWHILE.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="PARSE_OBJECT" VERSION="1" LANGU="E" DESCRIPT="Parse JSON string into key/value pair table" EXPOSURE="0" STATE="1" EDITORDER="9 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <source>METHOD parse_object.
+
+  DATA: lv_json TYPE string
+      , lv_close TYPE i
+      , ls_key_value TYPE zjson_key_value
+      .
+
+  lv_json = me-&gt;json.
+  CLEAR me-&gt;data.
+
+  WHILE NOT lv_json CO &apos;{} &apos;.
+
+    &quot;*--- get key ---*
+    SHIFT lv_json LEFT UP TO &apos;&quot;&apos;.
+    lv_close = get_offset_close( lv_json ).
+
+    SUBTRACT 2 FROM lv_close.
+    ls_key_value-key = lv_json+1(lv_close).
+
+    &quot;*--- get value ---*
+    SHIFT lv_json LEFT UP TO &apos;:&apos;.
+    SHIFT lv_json LEFT.
+    SHIFT lv_json LEFT DELETING LEADING space.
+
+    CASE lv_json(1).
+      WHEN &apos;&quot;&apos;.
+        lv_close = get_offset_close( lv_json ).
+        SUBTRACT 2 FROM lv_close.
+        ls_key_value-value = lv_json+1(lv_close).
+        ADD 2 TO lv_close.
+        lv_json = lv_json+lv_close.
+      WHEN &apos;{&apos; OR &apos;[&apos;.
+        lv_close = get_offset_close( lv_json ).
+        ls_key_value-value = lv_json+0(lv_close).
+        ADD 1 TO lv_close.
+        lv_json = lv_json+lv_close.
+      WHEN OTHERS.     &quot;boolean, numbers
+        SPLIT lv_json AT &apos;,&apos; INTO ls_key_value-value lv_json.
+        REPLACE &apos;}&apos; WITH `` INTO ls_key_value-value.   &quot;last one of the list
+    ENDCASE.
+
+    INSERT ls_key_value INTO TABLE me-&gt;data.
+  ENDWHILE.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="RESET_CURSOR" VERSION="1" LANGU="E" DESCRIPT="Reset array loop cursor" EXPOSURE="2" STATE="1" EDITORDER="12 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101108" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <source>METHOD reset_cursor.
+
+  CLEAR me-&gt;array_cursor.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DATA" VERSION="1" LANGU="E" DESCRIPT="Set document data (ABAP data)" EXPOSURE="2" STATE="1" EDITORDER="7 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DATA" SCONAME="DATA" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+   <source>METHOD set_data.
+
+  CLEAR json.
+  add_data( data ).
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_JSON" VERSION="1" LANGU="E" DESCRIPT="Set document data (JSON)" EXPOSURE="2" STATE="1" EDITORDER="5 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDBY="SE38_UWE" CHANGEDON="20101109" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="701" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_JSON" SCONAME="JSON" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="SE38_UWE" CREATEDON="20101109" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+   <source>METHOD SET_JSON.
+
+  me-&gt;json = json.
+
+  &quot;*--- esp. for CouchDB ---*
+  REPLACE ALL OCCURRENCES OF cl_abap_char_utilities=&gt;cr_lf IN me-&gt;json WITH ``.
+  REPLACE ALL OCCURRENCES OF cl_abap_char_utilities=&gt;newline IN me-&gt;json WITH ``.
+
+  SHIFT me-&gt;json LEFT DELETING LEADING space.
+
+  parse( ).
+
+ENDMETHOD.</source>
+  </method>
+ </CLAS>
+ <TABL TABNAME="ZJSON_KEY_VALUE" DDLANGUAGE="E" TABCLASS="INTTAB" DATMIN="0000000000" DATMAX="0000000000" DATAVG="0000000000" DDTEXT="JSON Key/Value pair" AUTHCLASS="00" AS4USER="SE38_UWE" AS4DATE="20100721" AS4TIME="174330" PROZPUFF="000" EXCLASS="1">
+  <dd09l AS4VERS="0000" SCHFELDANZ="000" AS4DATE="00000000" AS4TIME="000000"/>
+  <dd03p TABNAME="ZJSON_KEY_VALUE" FIELDNAME="KEY" DDLANGUAGE="E" POSITION="0001" ROLLNAME="STRINGVAL" ADMINFIELD="0" INTTYPE="g" INTLEN="000008" ROUTPUTLEN="000000" HEADLEN="06" SCRLEN1="10" SCRLEN2="15" SCRLEN3="20" DTELMASTER="D" DATATYPE="STRG" LENG="000000" OUTPUTLEN="000000" DECIMALS="000000" MASK="  STRGE" MASKLEN="0000" DDTEXT="String" REPTEXT="String" SCRTEXT_S="String" SCRTEXT_M="String" SCRTEXT_L="String" DEPTH="00" COMPTYPE="E" EXCLASS="0" DBPOSITION="0000"/>
+  <dd03p TABNAME="ZJSON_KEY_VALUE" FIELDNAME="VALUE" DDLANGUAGE="E" POSITION="0002" ROLLNAME="STRINGVAL" ADMINFIELD="0" INTTYPE="g" INTLEN="000008" ROUTPUTLEN="000000" HEADLEN="06" SCRLEN1="10" SCRLEN2="15" SCRLEN3="20" DTELMASTER="D" DATATYPE="STRG" LENG="000000" OUTPUTLEN="000000" DECIMALS="000000" MASK="  STRGE" MASKLEN="0000" DDTEXT="String" REPTEXT="String" SCRTEXT_S="String" SCRTEXT_M="String" SCRTEXT_L="String" DEPTH="00" COMPTYPE="E" EXCLASS="0" DBPOSITION="0000"/>
+ </TABL>
+ <TTYP TYPENAME="ZJSON_KEY_VALUE_T" DDLANGUAGE="E" ROWTYPE="ZJSON_KEY_VALUE" ROWKIND="S" DATATYPE="STRU" LENG="000000" DECIMALS="000000" ACCESSMODE="H" KEYDEF="K" KEYKIND="U" KEYFDCOUNT="0001" AS4USER="SE38_UWE" AS4DATE="20100808" AS4TIME="222904" DDTEXT="JSON Key/Value pairs (hashed)" TYPELEN="000016" CTLENG="000000" CTDECIMALS="000000" OCCURS="00000">
+  <dd42v TYPENAME="ZJSON_KEY_VALUE_T" KEYFDPOS="0001" ROWTYPEPOS="0001" KEYFIELD="KEY"/>
+ </TTYP>
+</nugget>
