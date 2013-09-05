@@ -7,7 +7,7 @@ The JSON Document Class
 None
  
 ## Installation zJSON
-import Nugget with SAPlink (see https://www.assembla.com/spaces/saplink/wiki)
+import Nugget with [SAPlink](http://www.saplink.org)
 
 ## Usage
 see wiki ( https://github.com/se38/zJSON/wiki )
