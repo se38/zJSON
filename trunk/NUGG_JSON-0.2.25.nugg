@@ -1444,9 +1444,16 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
         lv_len = data_descr-&gt;length / cl_abap_char_utilities=&gt;charsize.  &quot;length of field (unicode/non-unicode)
 
         IF  data_descr-&gt;type_kind = data_descr-&gt;typekind_char   &quot;character
-        AND lv_len = 1                                          &quot;length 1
-        AND tmp_s = &apos;true&apos;.                                     &quot;-&gt; boolean
-          data = abap_true.
+        AND lv_len = 1.                                          &quot;length 1
+
+          IF tmp_s = &apos;true&apos;.                                     &quot;-&gt; boolean
+            data = abap_true.
+          ELSEIF tmp_s = &apos;false&apos;.
+            data = abap_false.
+          ELSE.
+            data = tmp_s.
+          ENDIF.
+
         ELSE.
           data = tmp_s.
         ENDIF.
