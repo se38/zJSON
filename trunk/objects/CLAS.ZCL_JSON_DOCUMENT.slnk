@@ -81,7 +81,10 @@ CLASS lcl_zjson DEFINITION FINAL FOR TESTING &quot;#AU Risk_Level Harmless
              test_date_format_reverse FOR TESTING
                RAISING
                  zcx_json_document,
-             test_namespace           FOR TESTING.
+             test_namespace           FOR TESTING,
+             test_boolean             FOR TESTING
+               RAISING
+                 zcx_json_document.
 
 ENDCLASS.                    &quot;lcl_zjson DEFINITION
 
@@ -623,6 +626,47 @@ CLASS lcl_zjson IMPLEMENTATION.
                                     act = &lt;ref&gt; ).
 
   ENDMETHOD.                    &quot;test_dref
+
+  METHOD test_boolean.
+
+    DATA: BEGIN OF ls_test,
+            yyy TYPE boolean,
+            xxx TYPE boolean,
+          END OF ls_test.
+
+    DATA: ls_test_ref LIKE ls_test.
+    DATA: json TYPE string.
+
+    ls_test-xxx = abap_true.
+
+    json_doc = zcl_json_document=&gt;create_with_data( ls_test ).
+    json = json_doc-&gt;get_json( ).
+
+    cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;yyy&quot; :false,&quot;xxx&quot; :true}&apos;
+                                    act = json ).
+
+    json_doc-&gt;get_data(
+      EXPORTING
+        json              = json
+      IMPORTING
+        data              = ls_test_ref
+    ).
+
+    cl_aunit_assert=&gt;assert_equals( exp = ls_test
+                                    act = ls_test_ref ).
+
+    json_doc = zcl_json_document=&gt;create_with_data(
+                     data             = ls_test
+                     ignore_boolean   = abap_true
+                 ).
+
+    json = json_doc-&gt;get_json( ).
+    cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;yyy&quot; :&quot;&quot;,&quot;xxx&quot; :&quot;X&quot;}&apos;
+                                    act = json ).
+
+
+  ENDMETHOD.
+
 ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation>
  <localTypes>*&quot;* use this source file for any type declarations (class
 *&quot;* definitions, interfaces or data types) you need for method
