@@ -84,7 +84,11 @@ CLASS lcl_zjson DEFINITION FINAL FOR TESTING &quot;#AU Risk_Level Harmless
              test_namespace           FOR TESTING,
              test_boolean             FOR TESTING
                RAISING
-                 zcx_json_document.
+                 zcx_json_document,
+             test_transform_simple    FOR TESTING
+               RAISING
+                 zcx_json_document
+                 cx_xslt_format_error.
 
 ENDCLASS.                    &quot;lcl_zjson DEFINITION
 
@@ -142,8 +146,17 @@ CLASS lcl_zjson IMPLEMENTATION.
     tnumc = &apos;00010&apos;.
     json_doc = zcl_json_document=&gt;create_with_data( tnumc ).
     json_str = json_doc-&gt;get_json( ).
+    cl_aunit_assert=&gt;assert_equals( exp = &apos;&quot;0010&quot;&apos;
+                                    act = json_str ).
+
+    json_doc = zcl_json_document=&gt;create_with_data(
+               data             = tnumc
+               numc_as_numeric  = abap_true
+           ).
+    json_str = json_doc-&gt;get_json( ).
     cl_aunit_assert=&gt;assert_equals( exp = &apos;10&apos;
                                     act = json_str ).
+
     json_doc2 = zcl_json_document=&gt;create_with_json( json_str ).
     json_doc2-&gt;get_data( IMPORTING data = tnumc2 ).
     cl_aunit_assert=&gt;assert_equals( exp = tnumc
@@ -153,8 +166,17 @@ CLASS lcl_zjson IMPLEMENTATION.
     tnumc = &apos;00000&apos;.
     json_doc = zcl_json_document=&gt;create_with_data( tnumc ).
     json_str = json_doc-&gt;get_json( ).
+    cl_aunit_assert=&gt;assert_equals( exp = &apos;&quot;0000&quot;&apos;
+                                    act = json_str ).
+
+    json_doc = zcl_json_document=&gt;create_with_data(
+               data             = tnumc
+               numc_as_numeric  = abap_true
+           ).
+    json_str = json_doc-&gt;get_json( ).
     cl_aunit_assert=&gt;assert_equals( exp = &apos;0&apos;
                                     act = json_str ).
+
     json_doc2 = zcl_json_document=&gt;create_with_json( json_str ).
     json_doc2-&gt;get_data( IMPORTING data = tnumc2 ).
     cl_aunit_assert=&gt;assert_equals( exp = tnumc
@@ -275,6 +297,18 @@ CLASS lcl_zjson IMPLEMENTATION.
     json_doc = zcl_json_document=&gt;create_with_data( s_numc ).
     json_str = json_doc-&gt;get_json( ).
 
+    cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;nc&quot; :&quot;0010&quot;}&apos;
+                                    act = json_str ).
+    json_doc2 = zcl_json_document=&gt;create_with_json( json_str ).
+    json_doc2-&gt;get_data( IMPORTING data = s_numc2 ).
+    cl_aunit_assert=&gt;assert_equals( exp = s_numc
+                                    act = s_numc2 ).
+
+    json_doc = zcl_json_document=&gt;create_with_data(
+               data             = s_numc
+               numc_as_numeric  = abap_true
+           ).
+    json_str = json_doc-&gt;get_json( ).
     cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;nc&quot; :10}&apos;
                                     act = json_str ).
     json_doc2 = zcl_json_document=&gt;create_with_json( json_str ).
@@ -287,6 +321,18 @@ CLASS lcl_zjson IMPLEMENTATION.
     json_doc = zcl_json_document=&gt;create_with_data( s_numc ).
     json_str = json_doc-&gt;get_json( ).
 
+    cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;nc&quot; :&quot;0010&quot;}&apos;
+                                    act = json_str ).
+    json_doc2 = zcl_json_document=&gt;create_with_json( json_str ).
+    json_doc2-&gt;get_data( IMPORTING data = s_numc2 ).
+    cl_aunit_assert=&gt;assert_equals( exp = s_numc
+                                    act = s_numc2 ).
+
+    json_doc = zcl_json_document=&gt;create_with_data(
+               data             = s_numc
+               numc_as_numeric  = abap_true
+           ).
+    json_str = json_doc-&gt;get_json( ).
     cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;nc&quot; :10}&apos;
                                     act = json_str ).
     json_doc2 = zcl_json_document=&gt;create_with_json( json_str ).
@@ -664,6 +710,65 @@ CLASS lcl_zjson IMPLEMENTATION.
     cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;yyy&quot; :&quot;&quot;,&quot;xxx&quot; :&quot;X&quot;}&apos;
                                     act = json ).
 
+  ENDMETHOD.
+
+
+  METHOD test_transform_simple.
+
+    DATA: BEGIN OF ls_test,
+           yyy TYPE string,
+           xxx TYPE n LENGTH 3,
+         END OF ls_test.
+
+    DATA: ls_test_ref LIKE ls_test.
+    DATA: json TYPE string.
+
+    ls_test-yyy = &apos;Field 1&apos;.
+    ls_test-xxx = &apos;123&apos;.
+
+    zcl_json_document=&gt;transform_simple(
+      EXPORTING
+        data_in              = ls_test
+      IMPORTING
+        json_out             = json
+    ).
+
+    cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;RESULT&quot;:{&quot;YYY&quot;:&quot;Field 1&quot;,&quot;XXX&quot;:&quot;123&quot;}}&apos;
+                                    act = json ).
+
+    zcl_json_document=&gt;transform_simple(
+      EXPORTING
+        json_in              = json
+      IMPORTING
+        data_out             = ls_test_ref
+    ).
+
+    cl_aunit_assert=&gt;assert_equals( exp = ls_test
+                                    act = ls_test_ref ).
+
+    zcl_json_document=&gt;transform_simple(
+      EXPORTING
+        data_in              = ls_test
+        lower_case           = abap_true
+      IMPORTING
+        json_out             = json
+    ).
+
+    cl_aunit_assert=&gt;assert_equals( exp = &apos;{&quot;result&quot;:{&quot;yyy&quot;:&quot;Field 1&quot;,&quot;xxx&quot;:&quot;123&quot;}}&apos;
+                                    act = json ).
+
+    CLEAR ls_test_ref.
+
+    zcl_json_document=&gt;transform_simple(
+      EXPORTING
+        json_in              = json
+        lower_case           = abap_true
+      IMPORTING
+        data_out             = ls_test_ref
+    ).
+
+    cl_aunit_assert=&gt;assert_equals( exp = ls_test
+                                    act = ls_test_ref ).
 
   ENDMETHOD.
 
@@ -679,13 +784,14 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CO_VERSION" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="1 " ATTDECLTYP="2" ATTVALUE="&apos;0.2.24&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATA" VERSION="1" LANGU="E" DESCRIPT="JSON Key/Value pairs (hashed)" EXPOSURE="0" STATE="1" EDITORDER="3 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZJSON_KEY_VALUE_T" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATA_T" VERSION="1" LANGU="E" DESCRIPT="Table of Strings" EXPOSURE="0" STATE="1" EDITORDER="4 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING_TABLE" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
- <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATE_FORMAT" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="10 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR10" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATE_FORMAT" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="11 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR10" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DONT_ESCAPE_LTGT" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="8 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="BOOLEAN" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
- <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DONT_REPLACE_LINEBREAKS" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="9 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="BOOLEAN" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
- <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ESCAPE_NOT_NEEDED" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="12 " ATTDECLTYP="0" ATTVALUE="ABAP_UNDEFINED" ATTEXPVIRT="0" TYPTYPE="1" TYPE="BOOLEAN" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DONT_REPLACE_LINEBREAKS" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="10 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="BOOLEAN" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ESCAPE_NOT_NEEDED" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="13 " ATTDECLTYP="0" ATTVALUE="ABAP_UNDEFINED" ATTEXPVIRT="0" TYPTYPE="1" TYPE="BOOLEAN" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="IGNORE_BOOLEAN" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="7 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="BOOLEAN" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="JSON" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="2 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
- <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="NAMESPACE_REPLACE_PATTERN" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="11 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="NAMESPACE_REPLACE_PATTERN" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="12 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="NUMC_AS_NUMERIC" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="9 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="BOOLEAN" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SUPPRESS_ITAB" VERSION="1" LANGU="E" DESCRIPT='no output of &quot;itab:[...]&quot;, just the table' EXPOSURE="0" STATE="1" EDITORDER="6 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="BOOLEAN" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_BOOLEAN" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="5 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ADD_BOOLEAN" SCONAME="STRING" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
@@ -735,11 +841,18 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
           add_string( data ).
         ENDIF.
 
+      WHEN data_descr-&gt;typekind_num.          &quot;charlike incl. NUMC.
+
+        IF me-&gt;numc_as_numeric IS INITIAL.
+          add_string( data ).
+        ELSE.
+          add_number( data ).
+        ENDIF.
+
       WHEN data_descr-&gt;typekind_int
       OR   data_descr-&gt;typekind_int1
       OR   data_descr-&gt;typekind_int2
-      OR   data_descr-&gt;typekind_packed
-      OR   data_descr-&gt;typekind_num.          &quot;charlike incl. NUMC.
+      OR   data_descr-&gt;typekind_packed.
 
         add_number( data ).
 
@@ -1102,8 +1215,9 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="SUPPRESS_ITAB" VERSION="1" LANGU="E" DESCRIPT='no output of &quot;itab:[...]&quot;, just the table' CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="IGNORE_BOOLEAN" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="DONT_ESCAPE_LTGT" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="4 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
-  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="DATE_FORMAT" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="5 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="CHAR10" PAROPTIONL="X"/>
-  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="JSON_DOCUMENT" VERSION="1" LANGU="E" DESCRIPT="JSON Document" CMPTYPE="1" MTDTYPE="0" EDITORDER="6 " DISPID="0 " PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="ZCL_JSON_DOCUMENT"/>
+  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="NUMC_AS_NUMERIC" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="5 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
+  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="DATE_FORMAT" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="6 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="CHAR10" PAROPTIONL="X"/>
+  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CREATE_WITH_DATA" SCONAME="JSON_DOCUMENT" VERSION="1" LANGU="E" DESCRIPT="JSON Document" CMPTYPE="1" MTDTYPE="0" EDITORDER="7 " DISPID="0 " PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="ZCL_JSON_DOCUMENT"/>
   <source>METHOD create_with_data.
 
     CREATE OBJECT json_document.
@@ -1112,6 +1226,7 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
       suppress_itab    = suppress_itab
       ignore_boolean   = ignore_boolean
       dont_escape_ltgt = dont_escape_ltgt
+      numc_as_numeric  = numc_as_numeric
       date_format      = date_format
       ).
 
@@ -2159,7 +2274,8 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DATA" SCONAME="SUPPRESS_ITAB" VERSION="1" LANGU="E" DESCRIPT='no output of &quot;itab:[...]&quot;, just the table' CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DATA" SCONAME="IGNORE_BOOLEAN" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DATA" SCONAME="DONT_ESCAPE_LTGT" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="4 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
-  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DATA" SCONAME="DATE_FORMAT" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="5 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="CHAR10" PAROPTIONL="X"/>
+  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DATA" SCONAME="NUMC_AS_NUMERIC" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="5 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
+  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DATA" SCONAME="DATE_FORMAT" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="6 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="CHAR10" PAROPTIONL="X"/>
   <source>METHOD set_data.
 
     IF suppress_itab IS SUPPLIED.
@@ -2178,6 +2294,10 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
       set_date_format( date_format ).
     ENDIF.
 
+    IF numc_as_numeric IS SUPPLIED.
+      set_numc_as_numeric( numc_as_numeric ).
+    ENDIF.
+
     CLEAR json.
     add_data( data ).
 
@@ -2193,7 +2313,7 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
 
   ENDMETHOD.                    &quot;SET_DATE_FORMAT</source>
  </method>
- <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DONT_ESCAPE_LTGT" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="17 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+ <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DONT_ESCAPE_LTGT" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="18 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DONT_ESCAPE_LTGT" SCONAME="DONT_ESCAPE_LTGT" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN"/>
   <source>METHOD set_dont_escape_ltgt.
 
@@ -2201,13 +2321,13 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
 
   ENDMETHOD.                    &quot;set_dont_escape_ltgt</source>
  </method>
- <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DONT_REPLACE_LINEBREAKS" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="16 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+ <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DONT_REPLACE_LINEBREAKS" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="17 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_DONT_REPLACE_LINEBREAKS" SCONAME="DONT_REPLACE_LINEBREAKS" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN"/>
   <source>METHOD set_dont_replace_linebreaks.
     me-&gt;dont_replace_linebreaks = dont_replace_linebreaks.
   ENDMETHOD.</source>
  </method>
- <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_IGNORE_BOOLEAN" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="21 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+ <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_IGNORE_BOOLEAN" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="22 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_IGNORE_BOOLEAN" SCONAME="IGNORE_BOOLEAN" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN"/>
   <source>METHOD set_ignore_boolean.
 
@@ -2215,7 +2335,7 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
 
   ENDMETHOD.                    &quot;SET_SUPPRESS_ITAB</source>
  </method>
- <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_JSON" VERSION="1" LANGU="E" DESCRIPT="Set document data (JSON)" EXPOSURE="2" STATE="1" EDITORDER="18 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+ <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_JSON" VERSION="1" LANGU="E" DESCRIPT="Set document data (JSON)" EXPOSURE="2" STATE="1" EDITORDER="19 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_JSON" SCONAME="JSON" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_JSON" SCONAME="DATE_FORMAT" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="CHAR10" PAROPTIONL="X"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_JSON" SCONAME="DONT_REPLACE_LINEBREAKS" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN" PAROPTIONL="X"/>
@@ -2243,7 +2363,7 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
 
   ENDMETHOD.                    &quot;SET_JSON</source>
  </method>
- <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_NAMESPACE_CONVERSION" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="19 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+ <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_NAMESPACE_CONVERSION" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="20 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_NAMESPACE_CONVERSION" SCONAME="NAMESPACE_1_SLASH_REPLACE" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="C"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_NAMESPACE_CONVERSION" SCONAME="NAMESPACE_2_SLASH_REPLACE" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="C"/>
   <source>METHOD set_namespace_conversion.
@@ -2261,7 +2381,13 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
 
   ENDMETHOD.                    &quot;SET_NAMESPACE_CONVERSION</source>
  </method>
- <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_SUPPRESS_ITAB" VERSION="1" LANGU="E" DESCRIPT='no output of &quot;itab:[...]&quot;, just the table' EXPOSURE="2" STATE="1" EDITORDER="20 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+ <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_NUMC_AS_NUMERIC" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="16 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_NUMC_AS_NUMERIC" SCONAME="NUMC_AS_NUMERIC" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN"/>
+  <source>METHOD set_numc_as_numeric.
+    me-&gt;numc_as_numeric = numc_as_numeric.
+  ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_SUPPRESS_ITAB" VERSION="1" LANGU="E" DESCRIPT='no output of &quot;itab:[...]&quot;, just the table' EXPOSURE="2" STATE="1" EDITORDER="21 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="SET_SUPPRESS_ITAB" SCONAME="SUPPRESS_ITAB" VERSION="1" LANGU="E" DESCRIPT='no output of &quot;itab:[...]&quot;, just the table' CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN"/>
   <source>METHOD set_suppress_itab.
 
@@ -2269,7 +2395,7 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
 
   ENDMETHOD.                    &quot;SET_SUPPRESS_ITAB</source>
  </method>
- <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="TRANSFORM_SIMPLE" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="22 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="1" MTDNEWEXC="X" BCMTDCAT="00" BCMTDSYN="0">
+ <method CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="TRANSFORM_SIMPLE" VERSION="1" LANGU="E" EXPOSURE="2" STATE="1" EDITORDER="23 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="1" MTDNEWEXC="X" BCMTDCAT="00" BCMTDSYN="0">
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="TRANSFORM_SIMPLE" SCONAME="ROOT_NAME" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING" PARVALUE="&apos;RESULT&apos;"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="TRANSFORM_SIMPLE" SCONAME="JSON_IN" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING" PAROPTIONL="X"/>
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="TRANSFORM_SIMPLE" SCONAME="DATA_IN" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY" PAROPTIONL="X"/>
@@ -2392,6 +2518,39 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
       CALL TRANSFORMATION id SOURCE (param_t)
                              RESULT XML writer_out.
       jsonx = writer_out-&gt;get_output( ).
+
+      &quot;*--- field names as lower case characters? ---*
+      IF lower_case = abap_true.
+
+        reader = cl_sxml_string_reader=&gt;create( jsonx ).
+        writer ?= cl_sxml_string_writer=&gt;create( type = &lt;type&gt; ).   &quot;type = if_sxml=&gt;co_xt_json
+
+        node = reader-&gt;read_next_node( ).
+
+        WHILE node IS NOT INITIAL.
+
+          IF node-&gt;type = if_sxml_node=&gt;co_nt_element_open.
+            node_el ?= node.
+            att = node_el-&gt;get_attributes( ).
+
+            LOOP AT att ASSIGNING &lt;att&gt;.
+              CHECK &lt;att&gt;-&gt;qname-name = &apos;name&apos;.
+              varname = &lt;att&gt;-&gt;get_value( ).
+              TRANSLATE varname TO LOWER CASE.
+              &lt;att&gt;-&gt;set_value( varname ).
+            ENDLOOP.
+
+          ENDIF.
+
+          writer-&gt;write_node( node ).
+
+          node = reader-&gt;read_next_node( ).
+        ENDWHILE.
+
+        writer_out ?= writer.
+        jsonx = writer_out-&gt;get_output( ).
+
+      ENDIF.
 
       &quot;*--- convert xstring to string ---*
       TRY.
