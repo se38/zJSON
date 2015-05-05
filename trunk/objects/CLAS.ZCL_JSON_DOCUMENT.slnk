@@ -812,7 +812,7 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
  <typeUsage CLSNAME="ZCL_JSON_DOCUMENT" TYPEGROUP="ABAP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
  <forwardDeclaration>ABAP</forwardDeclaration>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="ARRAY_CURSOR" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="5 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="I" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
- <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CO_VERSION" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="1 " ATTDECLTYP="2" ATTVALUE="&apos;2.29&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="CO_VERSION" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="1 " ATTDECLTYP="2" ATTVALUE="&apos;2.30&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATA" VERSION="1" LANGU="E" DESCRIPT="JSON Key/Value pairs (hashed)" EXPOSURE="0" STATE="1" EDITORDER="3 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZJSON_KEY_VALUE_T" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATA_T" VERSION="1" LANGU="E" DESCRIPT="Table of Strings" EXPOSURE="0" STATE="1" EDITORDER="4 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING_TABLE" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
  <attribute CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="DATE_FORMAT" VERSION="1" LANGU="E" EXPOSURE="0" STATE="1" EDITORDER="11 " ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR10" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " TYPESRC_LENG="0 "/>
@@ -1197,8 +1197,9 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
   <parameter CLSNAME="ZCL_JSON_DOCUMENT" CMPNAME="APPEND_DATA" SCONAME="IV_NAME" VERSION="1" LANGU="E" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
   <source>METHOD append_data.
 
+    DATA object_found TYPE boolean.
+
     IF json IS INITIAL.
-*    json =  | &quot;{ iv_name }&quot;:|.                             &quot;&gt;= 7.02
 
       CONCATENATE                                             &quot;&lt;= 7.01
         &apos;&quot;&apos;
@@ -1207,7 +1208,12 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
       INTO json.
 
     ELSE.
-*    json = json &amp;&amp; |, &quot;{ iv_name }&quot;:|.                     &quot;&gt;= 7.02
+
+      &quot;*--- JSON already an object? ---*
+      IF json(1) = &apos;{&apos;.
+        object_found = abap_true.
+        FIND REGEX &apos;(.{0,})\}$&apos; IN json SUBMATCHES json.  &quot;JSON without the closing bracket
+      ENDIF.
 
       CONCATENATE                                             &quot;&lt;= 7.01
         json
@@ -1219,6 +1225,14 @@ ENDCLASS.                    &quot;lcl_zjson IMPLEMENTATION</localImplementation
     ENDIF.
 
     add_data( data ).
+
+    &quot;*--- close the object again ---*
+    IF object_found = abap_true.
+      CONCATENATE
+        json
+        &apos;}&apos;
+      INTO json.
+    ENDIF.
 
   ENDMETHOD.                    &quot;APPEND_DATA</source>
  </method>
