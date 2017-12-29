@@ -1,13 +1,13 @@
 # zJSON
 The JSON Document Class
  
-* Nugget: NUGG_JSON_PARSER.x.x.x.nugg
+* Source: /src
  
 ## Required Packages
 None
  
 ## Installation zJSON
-import Nugget with [SAPlink](http://www.saplink.org)
+import Source with [abapGit](https://github.com/larshp/abapGit)
 
 ## Usage
 see wiki ( https://github.com/se38/zJSON/wiki )
