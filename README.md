@@ -2,6 +2,7 @@
 The JSON Document Class
  
 * Source: /src
+(you can ignore the /trunc and /branches folders, these are the old SAPlink sources)
  
 ## Required Packages
 None
