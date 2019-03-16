@@ -1,221 +1,227 @@
-class ZCL_JSON_DOCUMENT definition
-  public
-  create public .
+CLASS zcl_json_document DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
 
-public section.
-  type-pools ABAP .
+  PUBLIC SECTION.
+    TYPE-POOLS abap .
 
-  methods APPEND_DATA
-    importing
-      !DATA type ANY
-      !IV_NAME type STRING .
-  class-methods CREATE
-    returning
-      value(JSON_DOCUMENT) type ref to ZCL_JSON_DOCUMENT .
-  class-methods CREATE_WITH_DATA
-    importing
-      !DATA type ANY
-      !SUPPRESS_ITAB type BOOLEAN optional
-      !IGNORE_BOOLEAN type BOOLEAN optional
-      !DONT_ESCAPE_LTGT type BOOLEAN optional
-      !NUMC_AS_NUMERIC type BOOLEAN optional
-      !DATE_FORMAT type CHAR10 optional
-    returning
-      value(JSON_DOCUMENT) type ref to ZCL_JSON_DOCUMENT .
-  class-methods CREATE_WITH_JSON
-    importing
-      !JSON type STRING
-      !DATE_FORMAT type CHAR10 optional
-    returning
-      value(JSON_DOCUMENT) type ref to ZCL_JSON_DOCUMENT .
-  methods DUMPS
-    importing
-      !JSON type STRING optional
-      !CURRENT_INTEND type I optional
-    exporting
-      !RESULT type STRING_TABLE .
-  methods GET_DATA
-    importing
-      !JSON type STRING optional
-    exporting
-      !DATA type ANY
-    raising
-      ZCX_JSON_DOCUMENT .
-  methods GET_NAME_VALUE_PAIRS
-    importing
-      !JSON type STRING optional
-      !DATE_FORMAT type CHAR10 optional
-      !DONT_REPLACE_LINEBREAKS type BOOLEAN optional
-    exporting
-      !NAME_VALUES type WDY_KEY_VALUE_LIST
-    raising
-      ZCX_JSON_DOCUMENT .
-  methods SET_NAME_VALUE_PAIRS
-    importing
-      !NAME_VALUES type WDY_KEY_VALUE_LIST .
-  methods GET_JSON
-    returning
-      value(JSON) type STRING .
-  methods GET_JSON_LARGE
-    exporting
-      !JSON type STRING .
-  methods GET_NEXT
-    returning
-      value(DATA_FOUND) type BOOLEAN .
-  methods GET_VALUE
-    importing
-      !KEY type STRING
-    returning
-      value(VALUE) type STRING .
-  methods GET_VALUE_INT
-    importing
-      !KEY type STRING
-    returning
-      value(VALUE) type I .
-  class-methods GET_VERSION
-    returning
-      value(VERSION) type STRING .
-  methods RESET_CURSOR .
-  methods SET_DATA
-    importing
-      !DATA type ANY
-      !SUPPRESS_ITAB type BOOLEAN optional
-      !IGNORE_BOOLEAN type BOOLEAN optional
-      !DONT_ESCAPE_LTGT type BOOLEAN optional
-      !NUMC_AS_NUMERIC type BOOLEAN optional
-      !DATE_FORMAT type CHAR10 optional .
-  methods CLEAR .
-  methods SET_DATE_FORMAT
-    importing
-      !DATE_FORMAT type CHAR10 .
-  methods SET_NUMC_AS_NUMERIC
-    importing
-      !NUMC_AS_NUMERIC type BOOLEAN .
-  methods SET_DONT_REPLACE_LINEBREAKS
-    importing
-      !DONT_REPLACE_LINEBREAKS type BOOLEAN .
-  methods SET_DONT_ESCAPE_LTGT
-    importing
-      !DONT_ESCAPE_LTGT type BOOLEAN .
-  methods SET_JSON
-    importing
-      !JSON type STRING
-      !DATE_FORMAT type CHAR10 optional
-      !DONT_REPLACE_LINEBREAKS type BOOLEAN optional .
-  methods SET_NAMESPACE_CONVERSION
-    importing
-      !NAMESPACE_1_SLASH_REPLACE type C
-      !NAMESPACE_2_SLASH_REPLACE type C .
-  methods SET_SUPPRESS_ITAB
-    importing
-      !SUPPRESS_ITAB type BOOLEAN .
-  methods SET_IGNORE_BOOLEAN
-    importing
-      !IGNORE_BOOLEAN type BOOLEAN .
-  class-methods TRANSFORM_SIMPLE
-    importing
-      !ROOT_NAME type STRING default 'RESULT'
-      !JSON_IN type STRING optional
-      !DATA_IN type ANY optional
-      !LOWER_CASE type BOOLEAN optional
-    exporting
-      !JSON_OUT type STRING
-      !DATA_OUT type ANY
-    raising
-      ZCX_JSON_DOCUMENT
-      CX_XSLT_FORMAT_ERROR .
-protected section.
-private section.
+    METHODS append_data
+      IMPORTING
+        !data    TYPE any
+        !iv_name TYPE string .
+    CLASS-METHODS create
+      RETURNING
+        VALUE(json_document) TYPE REF TO zcl_json_document .
+    CLASS-METHODS create_with_data
+      IMPORTING
+        !data                TYPE any
+        !suppress_itab       TYPE boolean OPTIONAL
+        !ignore_boolean      TYPE boolean OPTIONAL
+        !dont_escape_ltgt    TYPE boolean OPTIONAL
+        !numc_as_numeric     TYPE boolean OPTIONAL
+        !date_format         TYPE char10 OPTIONAL
+        replace_underscore   TYPE boolean OPTIONAL
+      RETURNING
+        VALUE(json_document) TYPE REF TO zcl_json_document .
+    CLASS-METHODS create_with_json
+      IMPORTING
+        !json                TYPE string
+        !date_format         TYPE char10 OPTIONAL
+      RETURNING
+        VALUE(json_document) TYPE REF TO zcl_json_document .
+    METHODS dumps
+      IMPORTING
+        !json           TYPE string OPTIONAL
+        !current_intend TYPE i OPTIONAL
+      EXPORTING
+        !result         TYPE string_table .
+    METHODS get_data
+      IMPORTING
+        !json TYPE string OPTIONAL
+      EXPORTING
+        !data TYPE any
+      RAISING
+        zcx_json_document .
+    METHODS get_name_value_pairs
+      IMPORTING
+        !json                    TYPE string OPTIONAL
+        !date_format             TYPE char10 OPTIONAL
+        !dont_replace_linebreaks TYPE boolean OPTIONAL
+      EXPORTING
+        !name_values             TYPE wdy_key_value_list
+      RAISING
+        zcx_json_document .
+    METHODS set_name_value_pairs
+      IMPORTING
+        !name_values TYPE wdy_key_value_list .
+    METHODS get_json
+      RETURNING
+        VALUE(json) TYPE string .
+    METHODS get_json_large
+      EXPORTING
+        !json TYPE string .
+    METHODS get_next
+      RETURNING
+        VALUE(data_found) TYPE boolean .
+    METHODS get_value
+      IMPORTING
+        !key         TYPE string
+      RETURNING
+        VALUE(value) TYPE string .
+    METHODS get_value_int
+      IMPORTING
+        !key         TYPE string
+      RETURNING
+        VALUE(value) TYPE i .
+    CLASS-METHODS get_version
+      RETURNING
+        VALUE(version) TYPE string .
+    METHODS reset_cursor .
+    METHODS set_data
+      IMPORTING
+        !data              TYPE any
+        !suppress_itab     TYPE boolean OPTIONAL
+        !ignore_boolean    TYPE boolean OPTIONAL
+        !dont_escape_ltgt  TYPE boolean OPTIONAL
+        !numc_as_numeric   TYPE boolean OPTIONAL
+        !date_format       TYPE char10 OPTIONAL
+        replace_underscore TYPE boolean OPTIONAL.
+    METHODS clear .
+    METHODS set_date_format
+      IMPORTING
+        !date_format TYPE char10 .
+    METHODS set_numc_as_numeric
+      IMPORTING
+        !numc_as_numeric TYPE boolean .
+    METHODS set_dont_replace_linebreaks
+      IMPORTING
+        !dont_replace_linebreaks TYPE boolean .
+    METHODS set_dont_escape_ltgt
+      IMPORTING
+        !dont_escape_ltgt TYPE boolean .
+    METHODS set_json
+      IMPORTING
+        !json                    TYPE string
+        !date_format             TYPE char10 OPTIONAL
+        !dont_replace_linebreaks TYPE boolean OPTIONAL .
+    METHODS set_namespace_conversion
+      IMPORTING
+        !namespace_1_slash_replace TYPE c
+        !namespace_2_slash_replace TYPE c .
+    METHODS set_suppress_itab
+      IMPORTING
+        !suppress_itab TYPE boolean .
+    METHODS set_ignore_boolean
+      IMPORTING
+        !ignore_boolean TYPE boolean .
+    METHODS set_replace_underscore
+      IMPORTING
+        replace_underscore TYPE boolean.
+    CLASS-METHODS transform_simple
+      IMPORTING
+        !root_name  TYPE string DEFAULT 'RESULT'
+        !json_in    TYPE string OPTIONAL
+        !data_in    TYPE any OPTIONAL
+        !lower_case TYPE boolean OPTIONAL
+      EXPORTING
+        !json_out   TYPE string
+        !data_out   TYPE any
+      RAISING
+        zcx_json_document
+        cx_xslt_format_error .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
-  constants CO_VERSION type STRING value '2.31' ##NO_TEXT.
-  data JSON type STRING .
-  data DATA type ZJSON_KEY_VALUE_T .
-  data DATA_T type STRING_TABLE .
-  data ARRAY_CURSOR type I .
-  data SUPPRESS_ITAB type BOOLEAN .
-  data IGNORE_BOOLEAN type BOOLEAN .
-  data DONT_ESCAPE_LTGT type BOOLEAN .
-  data NUMC_AS_NUMERIC type BOOLEAN .
-  data DONT_REPLACE_LINEBREAKS type BOOLEAN .
-  data DATE_FORMAT type CHAR10 .
-  data NAMESPACE_REPLACE_PATTERN type STRING .
-  data ESCAPE_NOT_NEEDED type BOOLEAN value ABAP_UNDEFINED ##NO_TEXT.
+    CONSTANTS co_version TYPE string VALUE '2.32' ##NO_TEXT.
+    DATA json TYPE string .
+    DATA data TYPE zjson_key_value_t .
+    DATA data_t TYPE string_table .
+    DATA array_cursor TYPE i .
+    DATA suppress_itab TYPE boolean .
+    DATA ignore_boolean TYPE boolean .
+    DATA dont_escape_ltgt TYPE boolean .
+    DATA numc_as_numeric TYPE boolean .
+    DATA dont_replace_linebreaks TYPE boolean .
+    DATA replace_underscore TYPE boolean.
+    DATA date_format TYPE char10 .
+    DATA namespace_replace_pattern TYPE string .
+    DATA escape_not_needed TYPE boolean VALUE abap_undefined ##NO_TEXT.
 
-  methods ADD_DATA
-    importing
-      !DATA type ANY .
-  methods ADD_DATE
-    importing
-      !DATE type D .
-  methods ADD_NUMBER
-    importing
-      !NUMBER type ANY .
-  methods ADD_STRING
-    importing
-      !STRING type ANY .
-  methods ADD_BOOLEAN
-    importing
-      !STRING type ANY .
-  methods ADD_STRU
-    importing
-      !LINE type ANY .
-  methods ADD_TABLE
-    importing
-      !TABLE type ANY TABLE .
-  methods ADD_TIME
-    importing
-      !TIME type T .
-  methods ADD_XSTRING
-    importing
-      !XSTRING type ANY .
-  class-methods COPYRIGHT .
-  methods ESCAPECHAR
-    importing
-      !JSON type STRING
-      !OFFSET type I
-    changing
-      !MATCH_RESULT type MATCH_RESULT_TAB .
-  methods FORMAT_DATE
-    importing
-      !DATE type D
-    returning
-      value(DATE_FORMATTED) type CHAR10 .
-  class-methods GET_KERNEL_INFO
-    exporting
-      !RELEASE type I
-      !PATCH type I .
-  methods GET_OFFSET_CLOSE
-    importing
-      !JSON type STRING
-      !OFFSET_OPEN type I default 0
-    returning
-      value(OFFSET_CLOSE) type I .
-  methods GET_STRU
-    changing
-      !LINE type ANY
-    raising
-      ZCX_JSON_DOCUMENT .
-  methods GET_TABLE
-    changing
-      !TABLE type ANY TABLE
-    raising
-      ZCX_JSON_DOCUMENT .
-  methods PARSE
-    importing
-      !JSON type STRING optional .
-  methods PARSE_ARRAY .
-  methods PARSE_OBJECT .
-  methods REPLACE_NAMESPACE
-    changing
-      !KEY type ABAP_COMPNAME .
+    METHODS add_data
+      IMPORTING
+        !data TYPE any .
+    METHODS add_date
+      IMPORTING
+        !date TYPE d .
+    METHODS add_number
+      IMPORTING
+        !number TYPE any .
+    METHODS add_string
+      IMPORTING
+        !string TYPE any .
+    METHODS add_boolean
+      IMPORTING
+        !string TYPE any .
+    METHODS add_stru
+      IMPORTING
+        !line TYPE any .
+    METHODS add_table
+      IMPORTING
+        !table TYPE ANY TABLE .
+    METHODS add_time
+      IMPORTING
+        !time TYPE t .
+    METHODS add_xstring
+      IMPORTING
+        !xstring TYPE any .
+    CLASS-METHODS copyright .
+    METHODS escapechar
+      IMPORTING
+        !json         TYPE string
+        !offset       TYPE i
+      CHANGING
+        !match_result TYPE match_result_tab .
+    METHODS format_date
+      IMPORTING
+        !date                 TYPE d
+      RETURNING
+        VALUE(date_formatted) TYPE char10 .
+    CLASS-METHODS get_kernel_info
+      EXPORTING
+        !release TYPE i
+        !patch   TYPE i .
+    METHODS get_offset_close
+      IMPORTING
+        !json               TYPE string
+        !offset_open        TYPE i DEFAULT 0
+      RETURNING
+        VALUE(offset_close) TYPE i .
+    METHODS get_stru
+      CHANGING
+        !line TYPE any
+      RAISING
+        zcx_json_document .
+    METHODS get_table
+      CHANGING
+        !table TYPE ANY TABLE
+      RAISING
+        zcx_json_document .
+    METHODS parse
+      IMPORTING
+        !json TYPE string OPTIONAL .
+    METHODS parse_array .
+    METHODS parse_object .
+    METHODS replace_namespace
+      CHANGING
+        !key TYPE abap_compname .
 ENDCLASS.
 
 
 
-CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
+CLASS zcl_json_document IMPLEMENTATION.
 
 
-METHOD add_boolean.
+  METHOD add_boolean.
 
     IF string = abap_true.
       CONCATENATE
@@ -232,7 +238,7 @@ METHOD add_boolean.
   ENDMETHOD.
 
 
-METHOD add_data.
+  METHOD add_data.
 
     DATA: data_descr TYPE REF TO cl_abap_datadescr.
 
@@ -327,7 +333,7 @@ METHOD add_data.
   ENDMETHOD.                    "ADD_DATA
 
 
-METHOD add_date.
+  METHOD add_date.
 
     DATA: lv_date_c TYPE c LENGTH 10.
 
@@ -343,7 +349,7 @@ METHOD add_date.
   ENDMETHOD.                    "ADD_DATE
 
 
-METHOD add_number.
+  METHOD add_number.
 
     DATA: lv_num_c TYPE c LENGTH 30.
 
@@ -373,7 +379,7 @@ METHOD add_number.
   ENDMETHOD.                    "ADD_NUMBER
 
 
-METHOD add_string.
+  METHOD add_string.
 
     DATA: lv_string TYPE string.
 
@@ -402,7 +408,7 @@ METHOD add_string.
   ENDMETHOD.                    "ADD_STRING
 
 
-METHOD add_stru.
+  METHOD add_stru.
 
     DATA: stru_descr       TYPE REF TO cl_abap_structdescr
         , lv_tabix         TYPE sy-tabix
@@ -431,6 +437,11 @@ METHOD add_stru.
       ASSIGN COMPONENT <component>-name OF STRUCTURE line TO <value>.
 
       comp_name = <component>-name.
+
+      IF me->replace_underscore = abap_true.
+        REPLACE '_' IN comp_name WITH '-'.
+      ENDIF.
+
       TRANSLATE comp_name TO LOWER CASE.
 
       replace_namespace( CHANGING key = comp_name ).
@@ -473,7 +484,7 @@ METHOD add_stru.
   ENDMETHOD.                    "ADD_STRU
 
 
-METHOD add_table.
+  METHOD add_table.
 
     DATA: lv_tabix TYPE sytabix.
     FIELD-SYMBOLS: <line> TYPE any.
@@ -524,7 +535,7 @@ METHOD add_table.
   ENDMETHOD.                    "ADD_TABLE
 
 
-METHOD add_time.
+  METHOD add_time.
 
     DATA: lv_time_c TYPE c LENGTH 8.
 
@@ -546,7 +557,7 @@ METHOD add_time.
   ENDMETHOD.                    "ADD_TIME
 
 
-METHOD add_xstring.
+  METHOD add_xstring.
 
     DATA: lv_string TYPE string.
 
@@ -574,7 +585,7 @@ METHOD add_xstring.
   ENDMETHOD.                    "ADD_XSTRING
 
 
-METHOD append_data.
+  METHOD append_data.
 
     DATA object_found TYPE boolean.
 
@@ -616,7 +627,7 @@ METHOD append_data.
   ENDMETHOD.                    "APPEND_DATA
 
 
-METHOD clear.
+  METHOD clear.
 
     CLEAR me->json.
     CLEAR me->data.
@@ -625,7 +636,7 @@ METHOD clear.
   ENDMETHOD.
 
 
-METHOD copyright.
+  METHOD copyright.
 
 *--------------------------------------------------------------------*
 *
@@ -642,14 +653,14 @@ METHOD copyright.
   ENDMETHOD.                    "COPYRIGHT
 
 
-METHOD create.
+  METHOD create.
 
     CREATE OBJECT json_document.
 
   ENDMETHOD.                    "CREATE
 
 
-METHOD create_with_data.
+  METHOD create_with_data.
 
     CREATE OBJECT json_document.
     json_document->set_data(
@@ -659,12 +670,13 @@ METHOD create_with_data.
       dont_escape_ltgt = dont_escape_ltgt
       numc_as_numeric  = numc_as_numeric
       date_format      = date_format
+      replace_underscore = replace_underscore
       ).
 
   ENDMETHOD.                    "CREATE_WITH_DATA
 
 
-METHOD create_with_json.
+  METHOD create_with_json.
 
     CREATE OBJECT json_document.
     json_document->set_json(
@@ -676,7 +688,7 @@ METHOD create_with_json.
   ENDMETHOD.                    "CREATE_WITH_JSON
 
 
-METHOD dumps.
+  METHOD dumps.
 
     DATA: json_doc   TYPE REF TO zcl_json_document
         , json_tmp   TYPE string
@@ -895,7 +907,7 @@ METHOD dumps.
   ENDMETHOD.                    "DUMPS
 
 
-METHOD escapechar.
+  METHOD escapechar.
 
     DATA lv_tab TYPE LINE OF match_result_tab.
     DATA lv_len TYPE i.
@@ -936,7 +948,7 @@ METHOD escapechar.
   ENDMETHOD.                    "ESCAPECHAR
 
 
-METHOD format_date.
+  METHOD format_date.
 
     DATA: i   TYPE i,
           fmt TYPE c LENGTH 10.
@@ -975,7 +987,7 @@ METHOD format_date.
   ENDMETHOD.                    "FORMAT_DATE
 
 
-METHOD get_data.
+  METHOD get_data.
 
     DATA: data_descr TYPE REF TO cl_abap_datadescr.
     DATA: lr_json_doc TYPE REF TO zcl_json_document.
@@ -1195,7 +1207,7 @@ METHOD get_data.
   ENDMETHOD.                    "GET_DATA
 
 
-METHOD get_json.
+  METHOD get_json.
 
     get_json_large(
       IMPORTING
@@ -1205,7 +1217,7 @@ METHOD get_json.
   ENDMETHOD.                    "GET_JSON
 
 
-METHOD get_json_large.
+  METHOD get_json_large.
 
     IF me->json IS NOT INITIAL.
 
@@ -1229,7 +1241,7 @@ METHOD get_json_large.
   ENDMETHOD.                    "GET_JSON_LARGE
 
 
-METHOD get_kernel_info.
+  METHOD get_kernel_info.
 
     TYPES: BEGIN OF ts_kernel_version,
              key(21)  TYPE c,
@@ -1263,7 +1275,7 @@ METHOD get_kernel_info.
   ENDMETHOD.                    "get_kernel_info
 
 
-METHOD get_name_value_pairs.
+  METHOD get_name_value_pairs.
 
     IF date_format IS SUPPLIED.
       set_date_format( date_format ).
@@ -1290,7 +1302,7 @@ METHOD get_name_value_pairs.
   ENDMETHOD.
 
 
-METHOD get_next.
+  METHOD get_next.
 
     DATA lv_json TYPE string.
     DATA lt_data LIKE me->data_t.
@@ -1316,7 +1328,7 @@ METHOD get_next.
   ENDMETHOD.                    "GET_NEXT
 
 
-METHOD get_offset_close.
+  METHOD get_offset_close.
 
     DATA: lv_offset          TYPE i
         , lv_copen           TYPE c
@@ -1392,7 +1404,7 @@ METHOD get_offset_close.
   ENDMETHOD.                    "GET_OFFSET_CLOSE
 
 
-METHOD get_stru.
+  METHOD get_stru.
 
     DATA: stru_descr   TYPE REF TO cl_abap_structdescr
         , comp_name    TYPE string
@@ -1427,7 +1439,7 @@ METHOD get_stru.
   ENDMETHOD.                    "GET_STRU
 
 
-METHOD get_table.
+  METHOD get_table.
 
     DATA: table_descr  TYPE REF TO cl_abap_tabledescr
         , data_descr   TYPE REF TO cl_abap_datadescr
@@ -1493,7 +1505,7 @@ METHOD get_table.
   ENDMETHOD.                    "GET_TABLE
 
 
-METHOD get_value.
+  METHOD get_value.
 
     FIELD-SYMBOLS: <data> TYPE zjson_key_value.
 
@@ -1509,7 +1521,7 @@ METHOD get_value.
   ENDMETHOD.                    "GET_VALUE
 
 
-METHOD get_value_int.
+  METHOD get_value_int.
 
     DATA: lv_value_string TYPE string.
     FIELD-SYMBOLS: <data> TYPE zjson_key_value.
@@ -1530,14 +1542,14 @@ METHOD get_value_int.
   ENDMETHOD.                    "GET_VALUE_INT
 
 
-METHOD get_version.
+  METHOD get_version.
 
     version = co_version.
 
   ENDMETHOD.                    "GET_VERSION
 
 
-METHOD parse.
+  METHOD parse.
 
     escape_not_needed = abap_undefined.
 
@@ -1564,7 +1576,7 @@ METHOD parse.
   ENDMETHOD.                    "PARSE
 
 
-METHOD parse_array.
+  METHOD parse_array.
 
     DATA: lv_json      TYPE string
         , lv_json_part TYPE string
@@ -1629,7 +1641,7 @@ METHOD parse_array.
   ENDMETHOD.                    "PARSE_ARRAY
 
 
-METHOD parse_object.
+  METHOD parse_object.
 
     DATA: lv_json TYPE string
         , lv_close TYPE i
@@ -1677,7 +1689,7 @@ METHOD parse_object.
   ENDMETHOD.                    "PARSE_OBJECT
 
 
-METHOD replace_namespace.
+  METHOD replace_namespace.
 
     DATA namespace TYPE string.
 
@@ -1697,14 +1709,14 @@ METHOD replace_namespace.
   ENDMETHOD.                    "REPLACE_NAMESPACE
 
 
-METHOD reset_cursor.
+  METHOD reset_cursor.
 
     CLEAR me->array_cursor.
 
   ENDMETHOD.                    "RESET_CURSOR
 
 
-METHOD set_data.
+  METHOD set_data.
 
     IF suppress_itab IS SUPPLIED.
       set_suppress_itab( suppress_itab ).
@@ -1726,6 +1738,10 @@ METHOD set_data.
       set_numc_as_numeric( numc_as_numeric ).
     ENDIF.
 
+    IF replace_underscore IS SUPPLIED.
+      set_replace_underscore( replace_underscore ).
+    ENDIF.
+
     CLEAR json.
     add_data( data ).
 
@@ -1734,33 +1750,33 @@ METHOD set_data.
   ENDMETHOD.                    "SET_DATA
 
 
-METHOD set_date_format.
+  METHOD set_date_format.
 
     me->date_format = date_format.
 
   ENDMETHOD.                    "SET_DATE_FORMAT
 
 
-METHOD set_dont_escape_ltgt.
+  METHOD set_dont_escape_ltgt.
 
     me->dont_escape_ltgt = dont_escape_ltgt.
 
   ENDMETHOD.                    "set_dont_escape_ltgt
 
 
-METHOD set_dont_replace_linebreaks.
+  METHOD set_dont_replace_linebreaks.
     me->dont_replace_linebreaks = dont_replace_linebreaks.
   ENDMETHOD.
 
 
-METHOD set_ignore_boolean.
+  METHOD set_ignore_boolean.
 
     me->ignore_boolean = ignore_boolean.
 
   ENDMETHOD.                    "SET_SUPPRESS_ITAB
 
 
-METHOD set_json.
+  METHOD set_json.
 
     IF date_format IS SUPPLIED.
       set_date_format( date_format ).
@@ -1785,7 +1801,7 @@ METHOD set_json.
   ENDMETHOD.                    "SET_JSON
 
 
-METHOD set_namespace_conversion.
+  METHOD set_namespace_conversion.
 
     IF  namespace_1_slash_replace IS INITIAL
     AND namespace_2_slash_replace IS INITIAL.
@@ -1801,7 +1817,7 @@ METHOD set_namespace_conversion.
   ENDMETHOD.                    "SET_NAMESPACE_CONVERSION
 
 
-METHOD set_name_value_pairs.
+  METHOD set_name_value_pairs.
 
     FIELD-SYMBOLS <name_value> TYPE wdr_simple_name_value.
 
@@ -1815,7 +1831,7 @@ METHOD set_name_value_pairs.
       value = <name_value>-value.
       IF value IS NOT INITIAL.
         SHIFT value LEFT DELETING LEADING space.
-        IF VALUE(1) CA '{['.
+        IF value(1) CA '{['.
           off = strlen( value ) - 1.   "offset of last character
           IF value+off(1) CA ']}'.
             is_json = abap_true.    "value is (probably) JSON
@@ -1862,19 +1878,19 @@ METHOD set_name_value_pairs.
   ENDMETHOD.
 
 
-METHOD set_numc_as_numeric.
+  METHOD set_numc_as_numeric.
     me->numc_as_numeric = numc_as_numeric.
   ENDMETHOD.
 
 
-METHOD set_suppress_itab.
+  METHOD set_suppress_itab.
 
     me->suppress_itab = suppress_itab.
 
   ENDMETHOD.                    "SET_SUPPRESS_ITAB
 
 
-METHOD transform_simple.
+  METHOD transform_simple.
 
     "see http://scn.sap.com/people/horst.keller/blog/2013/01/07/abap-and-json
     "see also SAP note 1648418
@@ -2034,4 +2050,9 @@ METHOD transform_simple.
     ENDIF.
 
   ENDMETHOD.                    "TRANSFORM_SIMPLE
+
+  METHOD set_replace_underscore.
+    me->replace_underscore = replace_underscore.
+  ENDMETHOD.
+
 ENDCLASS.
