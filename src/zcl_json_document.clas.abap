@@ -454,7 +454,7 @@ CLASS zcl_json_document IMPLEMENTATION.
       IF me->replace_double_underscore = abap_true.
         DATA l_offset TYPE i.
         FIND FIRST OCCURRENCE OF '__' IN comp_name MATCH OFFSET l_offset.
-        WHILE l_offset > 0.
+        WHILE sy-subrc = 0.
 
           REPLACE '__' IN comp_name WITH ``.
 
