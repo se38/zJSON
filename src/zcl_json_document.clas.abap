@@ -12,17 +12,23 @@ CLASS zcl_json_document DEFINITION
     CLASS-METHODS create
       RETURNING
         VALUE(json_document) TYPE REF TO zcl_json_document .
+    "! Create a JSON Document with an ABAP data object
+    "! @parameter data | ABAP data object
+    "! @parameter suppress_itab | Suppress the ITAB prefix if data is a table
+    "! @parameter replace_underscore | replace underscore with hyphen
+    "! @parameter replace_double_underscore | replace double underscore with CamelCase
     CLASS-METHODS create_with_data
       IMPORTING
-        !data                TYPE any
-        !suppress_itab       TYPE boolean OPTIONAL
-        !ignore_boolean      TYPE boolean OPTIONAL
-        !dont_escape_ltgt    TYPE boolean OPTIONAL
-        !numc_as_numeric     TYPE boolean OPTIONAL
-        !date_format         TYPE char10 OPTIONAL
-        replace_underscore   TYPE boolean OPTIONAL
+        data                      TYPE any
+        suppress_itab             TYPE boolean OPTIONAL
+        ignore_boolean            TYPE boolean OPTIONAL
+        dont_escape_ltgt          TYPE boolean OPTIONAL
+        numc_as_numeric           TYPE boolean OPTIONAL
+        date_format               TYPE char10 OPTIONAL
+        replace_underscore        TYPE boolean OPTIONAL
+        replace_double_underscore TYPE boolean OPTIONAL
       RETURNING
-        VALUE(json_document) TYPE REF TO zcl_json_document .
+        VALUE(json_document)      TYPE REF TO zcl_json_document .
     CLASS-METHODS create_with_json
       IMPORTING
         !json                TYPE string
@@ -79,13 +85,14 @@ CLASS zcl_json_document DEFINITION
     METHODS reset_cursor .
     METHODS set_data
       IMPORTING
-        !data              TYPE any
-        !suppress_itab     TYPE boolean OPTIONAL
-        !ignore_boolean    TYPE boolean OPTIONAL
-        !dont_escape_ltgt  TYPE boolean OPTIONAL
-        !numc_as_numeric   TYPE boolean OPTIONAL
-        !date_format       TYPE char10 OPTIONAL
-        replace_underscore TYPE boolean OPTIONAL.
+        !data                     TYPE any
+        !suppress_itab            TYPE boolean OPTIONAL
+        !ignore_boolean           TYPE boolean OPTIONAL
+        !dont_escape_ltgt         TYPE boolean OPTIONAL
+        !numc_as_numeric          TYPE boolean OPTIONAL
+        !date_format              TYPE char10 OPTIONAL
+        replace_underscore        TYPE boolean OPTIONAL
+        replace_double_underscore TYPE boolean OPTIONAL.
     METHODS clear .
     METHODS set_date_format
       IMPORTING
@@ -117,6 +124,9 @@ CLASS zcl_json_document DEFINITION
     METHODS set_replace_underscore
       IMPORTING
         replace_underscore TYPE boolean.
+    METHODS set_replace_double_underscore
+      IMPORTING
+        replace_double_underscore TYPE boolean.
     CLASS-METHODS transform_simple
       IMPORTING
         !root_name  TYPE string DEFAULT 'RESULT'
@@ -132,7 +142,7 @@ CLASS zcl_json_document DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
 
-    CONSTANTS co_version TYPE string VALUE '2.32' ##NO_TEXT.
+    CONSTANTS co_version TYPE string VALUE '2.33' ##NO_TEXT.
     DATA json TYPE string .
     DATA data TYPE zjson_key_value_t .
     DATA data_t TYPE string_table .
@@ -143,6 +153,7 @@ CLASS zcl_json_document DEFINITION
     DATA numc_as_numeric TYPE boolean .
     DATA dont_replace_linebreaks TYPE boolean .
     DATA replace_underscore TYPE boolean.
+    DATA replace_double_underscore TYPE boolean.
     DATA date_format TYPE char10 .
     DATA namespace_replace_pattern TYPE string .
     DATA escape_not_needed TYPE boolean VALUE abap_undefined ##NO_TEXT.
@@ -438,11 +449,27 @@ CLASS zcl_json_document IMPLEMENTATION.
 
       comp_name = <component>-name.
 
+      TRANSLATE comp_name TO LOWER CASE.
+
+      IF me->replace_double_underscore = abap_true.
+        DATA l_offset TYPE i.
+        FIND FIRST OCCURRENCE OF '__' IN comp_name MATCH OFFSET l_offset.
+        WHILE l_offset > 0.
+
+          REPLACE '__' IN comp_name WITH ``.
+
+          IF strlen( comp_name ) > l_offset.
+            TRANSLATE comp_name+l_offset(1) TO UPPER CASE.
+          ENDIF.
+
+          CLEAR l_offset.
+          FIND FIRST OCCURRENCE OF '__' IN comp_name MATCH OFFSET l_offset.
+        ENDWHILE.
+      ENDIF.
+
       IF me->replace_underscore = abap_true.
         REPLACE '_' IN comp_name WITH '-'.
       ENDIF.
-
-      TRANSLATE comp_name TO LOWER CASE.
 
       replace_namespace( CHANGING key = comp_name ).
 
@@ -671,6 +698,7 @@ CLASS zcl_json_document IMPLEMENTATION.
       numc_as_numeric  = numc_as_numeric
       date_format      = date_format
       replace_underscore = replace_underscore
+      replace_double_underscore = replace_double_underscore
       ).
 
   ENDMETHOD.                    "CREATE_WITH_DATA
@@ -1742,6 +1770,10 @@ CLASS zcl_json_document IMPLEMENTATION.
       set_replace_underscore( replace_underscore ).
     ENDIF.
 
+    IF replace_double_underscore IS SUPPLIED.
+      set_replace_double_underscore( replace_double_underscore ).
+    ENDIF.
+
     CLEAR json.
     add_data( data ).
 
@@ -2053,6 +2085,10 @@ CLASS zcl_json_document IMPLEMENTATION.
 
   METHOD set_replace_underscore.
     me->replace_underscore = replace_underscore.
+  ENDMETHOD.
+
+  METHOD set_replace_double_underscore.
+    me->replace_double_underscore = replace_double_underscore.
   ENDMETHOD.
 
 ENDCLASS.
