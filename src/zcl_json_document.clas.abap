@@ -40,8 +40,9 @@ CLASS zcl_json_document DEFINITION
         VALUE(json_document)      TYPE REF TO zcl_json_document .
     CLASS-METHODS create_with_json
       IMPORTING
-        !json                TYPE string
-        !date_format         TYPE char10 OPTIONAL
+        json                 TYPE string
+        date_format          TYPE char10 OPTIONAL
+        name_mappings        TYPE tt_name_mappings OPTIONAL
       RETURNING
         VALUE(json_document) TYPE REF TO zcl_json_document .
     METHODS dumps
@@ -118,9 +119,10 @@ CLASS zcl_json_document DEFINITION
         !dont_escape_ltgt TYPE boolean .
     METHODS set_json
       IMPORTING
-        !json                    TYPE string
-        !date_format             TYPE char10 OPTIONAL
-        !dont_replace_linebreaks TYPE boolean OPTIONAL .
+        json                    TYPE string
+        date_format             TYPE char10 OPTIONAL
+        dont_replace_linebreaks TYPE boolean OPTIONAL
+        name_mappings            TYPE tt_name_mappings OPTIONAL.
     METHODS set_namespace_conversion
       IMPORTING
         !namespace_1_slash_replace TYPE c
@@ -730,8 +732,9 @@ CLASS zcl_json_document IMPLEMENTATION.
     CREATE OBJECT json_document.
     json_document->set_json(
       EXPORTING
-        json        = json
-        date_format = date_format
+        json          = json
+        date_format   = date_format
+        name_mappings = name_mappings
     ).
 
   ENDMETHOD.                    "CREATE_WITH_JSON
@@ -1062,6 +1065,7 @@ CLASS zcl_json_document IMPLEMENTATION.
     lr_json_doc = zcl_json_document=>create_with_json(
         json          = lv_json
         date_format   = me->date_format
+        name_mappings = me->name_mappings
     ).
 
     data_descr ?= cl_abap_typedescr=>describe_by_data( data ).
@@ -1456,7 +1460,8 @@ CLASS zcl_json_document IMPLEMENTATION.
   METHOD get_stru.
 
     DATA: stru_descr   TYPE REF TO cl_abap_structdescr
-        , comp_name    TYPE string
+        , comp_name    TYPE abap_compname
+        , json_name    TYPE string
         , lv_json      TYPE string
         .
 
@@ -1473,7 +1478,10 @@ CLASS zcl_json_document IMPLEMENTATION.
 
       comp_name = <component>-name.
       TRANSLATE comp_name TO LOWER CASE.
-      lv_json = me->get_value( comp_name ).
+
+      json_name = map_abap_to_json_name( comp_name ).
+      TRANSLATE json_name TO LOWER CASE.
+      lv_json = me->get_value( json_name ).
 
       CHECK lv_json IS NOT INITIAL.    "value found?  "sapcodexch issue #6
 
@@ -1841,6 +1849,10 @@ CLASS zcl_json_document IMPLEMENTATION.
 
     IF dont_replace_linebreaks IS SUPPLIED.
       set_dont_replace_linebreaks( dont_replace_linebreaks ).
+    ENDIF.
+
+    IF name_mappings IS SUPPLIED.
+      set_name_mappings( name_mappings ).
     ENDIF.
 
     me->json = json.
