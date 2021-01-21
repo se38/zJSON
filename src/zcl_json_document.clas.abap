@@ -5,6 +5,13 @@ CLASS zcl_json_document DEFINITION
   PUBLIC SECTION.
     TYPE-POOLS abap .
 
+    TYPES: BEGIN OF ty_name_mapping,
+             abap_name TYPE abap_compname,
+             json_name TYPE string,
+           END OF ty_name_mapping.
+
+    TYPES: tt_name_mappings TYPE STANDARD TABLE OF ty_name_mapping WITH EMPTY KEY.
+
     METHODS append_data
       IMPORTING
         !data    TYPE any
@@ -17,6 +24,7 @@ CLASS zcl_json_document DEFINITION
     "! @parameter suppress_itab | Suppress the ITAB prefix if data is a table
     "! @parameter replace_underscore | replace underscore with hyphen
     "! @parameter replace_double_underscore | replace double underscore with CamelCase
+    "! @parameter name_mappings | fieldname mappings between ABAP component and JSON fieldname
     CLASS-METHODS create_with_data
       IMPORTING
         data                      TYPE any
@@ -27,6 +35,7 @@ CLASS zcl_json_document DEFINITION
         date_format               TYPE char10 OPTIONAL
         replace_underscore        TYPE boolean OPTIONAL
         replace_double_underscore TYPE boolean OPTIONAL
+        name_mappings             TYPE tt_name_mappings OPTIONAL
       RETURNING
         VALUE(json_document)      TYPE REF TO zcl_json_document .
     CLASS-METHODS create_with_json
@@ -92,7 +101,8 @@ CLASS zcl_json_document DEFINITION
         !numc_as_numeric          TYPE boolean OPTIONAL
         !date_format              TYPE char10 OPTIONAL
         replace_underscore        TYPE boolean OPTIONAL
-        replace_double_underscore TYPE boolean OPTIONAL.
+        replace_double_underscore TYPE boolean OPTIONAL
+        name_mappings             TYPE tt_name_mappings OPTIONAL.
     METHODS clear .
     METHODS set_date_format
       IMPORTING
@@ -127,6 +137,9 @@ CLASS zcl_json_document DEFINITION
     METHODS set_replace_double_underscore
       IMPORTING
         replace_double_underscore TYPE boolean.
+    METHODS set_name_mappings
+      IMPORTING
+        name_mappings TYPE tt_name_mappings.
     CLASS-METHODS transform_simple
       IMPORTING
         !root_name  TYPE string DEFAULT 'RESULT'
@@ -142,7 +155,7 @@ CLASS zcl_json_document DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
 
-    CONSTANTS co_version TYPE string VALUE '2.33' ##NO_TEXT.
+    CONSTANTS co_version TYPE string VALUE '2.34' ##NO_TEXT.
     DATA json TYPE string .
     DATA data TYPE zjson_key_value_t .
     DATA data_t TYPE string_table .
@@ -157,6 +170,7 @@ CLASS zcl_json_document DEFINITION
     DATA date_format TYPE char10 .
     DATA namespace_replace_pattern TYPE string .
     DATA escape_not_needed TYPE boolean VALUE abap_undefined ##NO_TEXT.
+    DATA name_mappings TYPE tt_name_mappings .
 
     METHODS add_data
       IMPORTING
@@ -224,12 +238,16 @@ CLASS zcl_json_document DEFINITION
     METHODS parse_object .
     METHODS replace_namespace
       CHANGING
-        !key TYPE abap_compname .
+        key TYPE abap_compname .
+    METHODS map_abap_to_json_name
+      IMPORTING abap_name       TYPE abap_compname
+      RETURNING VALUE(r_result) TYPE string.
+
 ENDCLASS.
 
 
 
-CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
+CLASS zcl_json_document IMPLEMENTATION.
 
 
   METHOD add_boolean.
@@ -424,6 +442,7 @@ CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
     DATA: stru_descr       TYPE REF TO cl_abap_structdescr
         , lv_tabix         TYPE sy-tabix
         , comp_name        TYPE abap_compname
+        , json_name        TYPE string
         , use_parameter_id TYPE boolean
         .
 
@@ -472,15 +491,16 @@ CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
       ENDIF.
 
       replace_namespace( CHANGING key = comp_name ).
+      json_name = map_abap_to_json_name( comp_name ).
 
-      IF comp_name = 'parameter_id'.
+      IF json_name = 'parameter_id'.
 *      lv_parameter_id = |{ <value> }|.   ">= 7.02
         lv_parameter_id = <value>.                            "<= 7.01
         use_parameter_id = abap_true.
         CONTINUE.
-      ELSEIF comp_name = 'data'.
+      ELSEIF json_name = 'data'.
         IF use_parameter_id IS NOT INITIAL.
-          comp_name = lv_parameter_id.
+          json_name = lv_parameter_id.
           CLEAR use_parameter_id.
         ENDIF.
       ENDIF.
@@ -488,7 +508,7 @@ CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
       CONCATENATE
         json
         '"'
-        comp_name
+        json_name
         '" :'
       INTO json.
 
@@ -699,6 +719,7 @@ CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
       date_format      = date_format
       replace_underscore = replace_underscore
       replace_double_underscore = replace_double_underscore
+      name_mappings    = name_mappings
       ).
 
   ENDMETHOD.                    "CREATE_WITH_DATA
@@ -1774,6 +1795,10 @@ CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
       set_replace_double_underscore( replace_double_underscore ).
     ENDIF.
 
+    IF name_mappings IS SUPPLIED.
+      set_name_mappings( name_mappings ).
+    ENDIF.
+
     CLEAR json.
     add_data( data ).
 
@@ -1912,16 +1937,6 @@ CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
 
   METHOD set_numc_as_numeric.
     me->numc_as_numeric = numc_as_numeric.
-  ENDMETHOD.
-
-
-  METHOD set_replace_double_underscore.
-    me->replace_double_underscore = replace_double_underscore.
-  ENDMETHOD.
-
-
-  METHOD set_replace_underscore.
-    me->replace_underscore = replace_underscore.
   ENDMETHOD.
 
 
@@ -2092,4 +2107,34 @@ CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.                    "TRANSFORM_SIMPLE
+
+  METHOD set_replace_underscore.
+    me->replace_underscore = replace_underscore.
+  ENDMETHOD.
+
+  METHOD set_replace_double_underscore.
+    me->replace_double_underscore = replace_double_underscore.
+  ENDMETHOD.
+
+  METHOD set_name_mappings.
+    me->name_mappings = name_mappings.
+  ENDMETHOD.
+
+
+  METHOD map_abap_to_json_name.
+
+    DATA name_mapping TYPE ty_name_mapping.
+
+    READ TABLE me->name_mappings
+      WITH KEY abap_name = abap_name
+      INTO name_mapping.
+
+    IF sy-subrc = 0.
+      r_result = name_mapping-json_name.
+    ELSE.
+      r_result = abap_name.
+    ENDIF.
+
+  ENDMETHOD.
+
 ENDCLASS.
