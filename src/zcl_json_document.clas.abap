@@ -229,7 +229,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_json_document IMPLEMENTATION.
+CLASS ZCL_JSON_DOCUMENT IMPLEMENTATION.
 
 
   METHOD add_boolean.
@@ -1915,6 +1915,16 @@ CLASS zcl_json_document IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD set_replace_double_underscore.
+    me->replace_double_underscore = replace_double_underscore.
+  ENDMETHOD.
+
+
+  METHOD set_replace_underscore.
+    me->replace_underscore = replace_underscore.
+  ENDMETHOD.
+
+
   METHOD set_suppress_itab.
 
     me->suppress_itab = suppress_itab.
@@ -2082,13 +2092,4 @@ CLASS zcl_json_document IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.                    "TRANSFORM_SIMPLE
-
-  METHOD set_replace_underscore.
-    me->replace_underscore = replace_underscore.
-  ENDMETHOD.
-
-  METHOD set_replace_double_underscore.
-    me->replace_double_underscore = replace_double_underscore.
-  ENDMETHOD.
-
 ENDCLASS.
