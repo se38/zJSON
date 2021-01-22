@@ -89,6 +89,12 @@ CLASS lcl_zjson DEFINITION FINAL FOR TESTING "#AU Risk_Level Harmless
           cx_xslt_format_error,
       test_name_values         FOR TESTING
         RAISING
+          zcx_json_document,
+      test_map_names_abap_2_json         FOR TESTING
+        RAISING
+          zcx_json_document,
+      test_map_names_json_2_abap         FOR TESTING
+        RAISING
           zcx_json_document.
 
 ENDCLASS.                    "lcl_zjson DEFINITION
@@ -798,6 +804,79 @@ CLASS lcl_zjson IMPLEMENTATION.
 
     cl_aunit_assert=>assert_equals( exp = '{"foo" :"bar","foo2" :"bar2" }'
                                     act = json ).
+
+  ENDMETHOD.
+
+  METHOD test_map_names_abap_2_json.
+
+    DATA: json TYPE string.
+
+    DATA: BEGIN OF local_test,
+            field_number1 TYPE string VALUE '111',
+            field_number2 TYPE string VALUE '222',
+            field_number3 TYPE string VALUE '333',
+          END OF local_test.
+
+    DATA name_mappings TYPE zcl_json_document=>tt_name_mappings.
+    DATA name_mapping TYPE zcl_json_document=>ty_name_mapping.
+
+    name_mapping-abap_name = 'field_number2'.
+    name_mapping-json_name = 'ThisIsATheJSONFieldName'.
+    INSERT name_mapping INTO TABLE name_mappings.
+
+    name_mapping-abap_name = 'field_number3'.
+    name_mapping-json_name = 'FieldNameThree'.
+    INSERT name_mapping INTO TABLE name_mappings.
+
+    json_doc = zcl_json_document=>create_with_data(
+                 data          = local_test
+                 name_mappings = name_mappings
+               ).
+
+    json = json_doc->get_json( ).
+
+    cl_aunit_assert=>assert_equals( exp = '{"field_number1" :"111","ThisIsATheJSONFieldName" :"222","FieldNameThree" :"333"}'
+                                    act = json ).
+
+  ENDMETHOD.
+
+  METHOD test_map_names_json_2_abap.
+
+    DATA: json TYPE string.
+
+    DATA: BEGIN OF actual,
+            field_number1 TYPE string,
+            field_number2 TYPE string,
+            field_number3 TYPE string,
+          END OF actual.
+
+    DATA: BEGIN OF expected,
+            field_number1 TYPE string VALUE '111',
+            field_number2 TYPE string VALUE '222',
+            field_number3 TYPE string VALUE '333',
+          END OF expected.
+
+    DATA name_mappings TYPE zcl_json_document=>tt_name_mappings.
+    DATA name_mapping TYPE zcl_json_document=>ty_name_mapping.
+
+    name_mapping-abap_name = 'field_number2'.
+    name_mapping-json_name = 'ThisIsATheJSONFieldName'.
+    INSERT name_mapping INTO TABLE name_mappings.
+
+    name_mapping-abap_name = 'field_number3'.
+    name_mapping-json_name = 'FieldNameThree'.
+    INSERT name_mapping INTO TABLE name_mappings.
+
+    json = '{"field_number1" :"111","ThisIsATheJSONFieldName" :"222","FieldNameThree" :"333"}'.
+
+    json_doc = zcl_json_document=>create_with_json(
+                 json = json
+                 name_mappings = name_mappings
+               ).
+
+    json_doc->get_data( IMPORTING data = actual ).
+
+    cl_aunit_assert=>assert_equals( exp = expected act = actual ).
 
   ENDMETHOD.
 
