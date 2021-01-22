@@ -122,7 +122,7 @@ CLASS zcl_json_document DEFINITION
         json                    TYPE string
         date_format             TYPE char10 OPTIONAL
         dont_replace_linebreaks TYPE boolean OPTIONAL
-        name_mappings            TYPE tt_name_mappings OPTIONAL.
+        name_mappings           TYPE tt_name_mappings OPTIONAL.
     METHODS set_namespace_conversion
       IMPORTING
         !namespace_1_slash_replace TYPE c
@@ -2129,7 +2129,15 @@ CLASS zcl_json_document IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD set_name_mappings.
-    me->name_mappings = name_mappings.
+
+    FIELD-SYMBOLS: <name_mapping> TYPE ty_name_mapping.
+    DATA name_mapping TYPE ty_name_mapping.
+
+    LOOP AT name_mappings INTO name_mapping.
+      INSERT name_mapping INTO TABLE me->name_mappings ASSIGNING <name_mapping>.
+      TRANSLATE <name_mapping>-abap_name TO LOWER CASE.
+    ENDLOOP.
+
   ENDMETHOD.
 
 
