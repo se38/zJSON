@@ -157,7 +157,7 @@ CLASS zcl_json_document DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
 
-    CONSTANTS co_version TYPE string VALUE '2.34' ##NO_TEXT.
+    CONSTANTS co_version TYPE string VALUE '2.35' ##NO_TEXT.
     DATA json TYPE string .
     DATA data TYPE zjson_key_value_t .
     DATA data_t TYPE string_table .
@@ -1273,6 +1273,8 @@ CLASS zcl_json_document IMPLEMENTATION.
   METHOD get_json_large.
 
     IF me->json IS NOT INITIAL.
+
+      SHIFT me->json LEFT DELETING LEADING space.
 
       IF  me->json+0(1) NE `{`
       AND me->json+0(1) NE `[`.    "sapcodexch issue #7

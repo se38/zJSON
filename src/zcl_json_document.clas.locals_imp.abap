@@ -95,6 +95,9 @@ CLASS lcl_zjson DEFINITION FINAL FOR TESTING "#AU Risk_Level Harmless
           zcx_json_document,
       test_map_names_json_2_abap         FOR TESTING
         RAISING
+          zcx_json_document,
+      test_colon_in_value         FOR TESTING
+        RAISING
           zcx_json_document.
 
 ENDCLASS.                    "lcl_zjson DEFINITION
@@ -877,6 +880,36 @@ CLASS lcl_zjson IMPLEMENTATION.
     json_doc->get_data( IMPORTING data = actual ).
 
     cl_aunit_assert=>assert_equals( exp = expected act = actual ).
+
+  ENDMETHOD.
+
+  METHOD test_colon_in_value.
+
+    TYPES: BEGIN OF ty_data,
+             f1 TYPE char20,
+             f2 TYPE char20,
+           END OF ty_data.
+
+    DATA data_s TYPE ty_data.
+    DATA data_t TYPE STANDARD TABLE OF ty_data WITH EMPTY KEY.
+    DATA json TYPE string.
+
+    data_s-f1 = 'Field 1'.
+    data_s-f2 = 'Field 2'.
+    INSERT data_s INTO TABLE data_t.
+
+    json = zcl_json_document=>create_with_data( data = data_t suppress_itab = abap_true )->get_json( ).
+
+    cl_aunit_assert=>assert_equals( exp = '[{"f1" :"Field 1","f2" :"Field 2"}]' act = json ).
+
+    CLEAR data_t.
+    data_s-f1 = 'Field 1'.
+    data_s-f2 = ':Field 2'.
+    INSERT data_s INTO TABLE data_t.
+
+    json = zcl_json_document=>create_with_data( data = data_t suppress_itab = abap_true )->get_json( ).
+
+    cl_aunit_assert=>assert_equals( exp = '[{"f1" :"Field 1","f2" :":Field 2"}]' act = json ).
 
   ENDMETHOD.
 
