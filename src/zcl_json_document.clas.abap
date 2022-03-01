@@ -1504,7 +1504,9 @@ CLASS zcl_json_document IMPLEMENTATION.
         , data_descr   TYPE REF TO cl_abap_datadescr
         , stru_descr   TYPE REF TO cl_abap_structdescr
         , comp_name    TYPE string
+        , comp_name_abap TYPE abap_compname
         , lv_json      TYPE string
+        , json_name    TYPE string
         .
 
     FIELD-SYMBOLS: <value> TYPE any
@@ -1545,7 +1547,10 @@ CLASS zcl_json_document IMPLEMENTATION.
 
           comp_name = <component>-name.
           TRANSLATE comp_name TO LOWER CASE.
-          lv_json = me->get_value( comp_name ).
+          comp_name_abap = comp_name.
+          json_name = map_abap_to_json_name( comp_name_abap ).
+          TRANSLATE json_name TO LOWER CASE.
+          lv_json = me->get_value( json_name ).
 
           CHECK lv_json IS NOT INITIAL.    "value found?  "sapcodexch issue #6
 
