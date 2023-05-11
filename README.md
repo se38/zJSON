@@ -1,3 +1,6 @@
+deprecated! see [HowTo: Migrating from zJSON to /ui2/cl_json](https://blogs.sap.com/2023/05/11/howto-migrating-from-zjson-to-ui2-cl_json/)
+
+
 # zJSON
 The JSON Document Class
  
